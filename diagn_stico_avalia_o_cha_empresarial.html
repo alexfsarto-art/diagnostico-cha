@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferramenta de Avaliação CHA Empresarial & Solo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 580px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 380px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#FAF9F6] text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+<!-- Chosen Palette: Warm Professional Harmony (Background: Warm Neutrals #FAF9F6; C: Indigo #4F46E5; H: Teal #0D9488; A: Amber #D97706; Text: Slate #1E293B) -->
+<!-- Application Structure Plan: Designed a 4-section interactive workflow supporting both Team Managers and Solo Entrepreneurs: 1. Overview & Archetypes Explorer; 2. Dual-Mode Interactive CHA Questionnaire (Team vs. Solo Mode with real-time toggle, presets, and dynamic progress); 3. Interactive Diagnostic Dashboard (Chart.js radar & bar charts, context-aware profile detection); 4. Tailored Action Plan (PDI) with 30-60-90 day roadmap specifically adjusted for solo vs team bottlenecks. -->
+<!-- Visualization & Content Choices: Quantitative score data mapped to Chart.js Radar Chart (compares C, H, A vs target) and Bar Chart (pillar breakdown) using Canvas. Qualitative recommendations dynamically switch between team management and solo productivity/automation workflows. No SVG or Mermaid JS used. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50 shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🎯</span>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight">CHA Empresarial & Solo</h1>
+                        <p class="text-xs text-slate-400">Diagnóstico para Líderes, PMEs e Autônomos</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-1 lg:space-x-2 text-sm font-medium">
+                    <a href="#overview" class="px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">Visão Geral</a>
+                    <a href="#archetypes" class="px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">Perfis</a>
+                    <a href="#assessment" class="px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors bg-indigo-600/80 hover:bg-indigo-600 text-white">Fazer Avaliação</a>
+                    <a href="#dashboard" class="px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">Resultados</a>
+                    <a href="#action-plan" class="px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">Plano PDI</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <section id="overview" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80">
+            <div class="max-w-3xl">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 mb-3">
+                    Metodologia de Gestão & Auto-Desenvolvimento
+                </span>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-4">
+                    Avaliação Diagnóstica de Perfil Empresarial & Autônomo
+                </h2>
+                <p class="text-slate-600 text-base leading-relaxed mb-6">
+                    Esta aplicação foi projetada tanto para <strong>empresários com equipe</strong> quanto para <strong>empreendedores individuais, autônomos, freelancers e MEIs (sem funcionários)</strong>. Utilizando a metodologia <strong>CHA (Conhecimentos, Habilidades e Atitudes)</strong>, você identificará seus pontos fortes, otimizará seu tempo e receberá um plano estratégico de desenvolvimento sob medida para o seu modelo de atuação.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                <div class="p-5 rounded-xl bg-indigo-50/60 border border-indigo-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">C</span>
+                        <h3 class="font-bold text-slate-900">Conhecimentos</h3>
+                    </div>
+                    <p class="text-xs font-semibold text-indigo-800 mb-1">"Saber" (Domínio Técnico)</p>
+                    <p class="text-sm text-slate-600">Finanças, precificação hora/projeto, obrigações fiscais, proposta de valor, público-alvo e visão de mercado.</p>
+                </div>
+
+                <div class="p-5 rounded-xl bg-emerald-50/60 border border-emerald-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">H</span>
+                        <h3 class="font-bold text-slate-900">Habilidades</h3>
+                    </div>
+                    <p class="text-xs font-semibold text-emerald-800 mb-1">"Saber Fazer" (Capacidade Prática)</p>
+                    <p class="text-sm text-slate-600">Auto-gestão do tempo, automação de tarefas, negociação com clientes, comunicação e resolução de problemas.</p>
+                </div>
+
+                <div class="p-5 rounded-xl bg-amber-50/60 border border-amber-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="w-8 h-8 rounded-lg bg-amber-600 text-white flex items-center justify-center font-bold text-sm">A</span>
+                        <h3 class="font-bold text-slate-900">Atitudes</h3>
+                    </div>
+                    <p class="text-xs font-semibold text-amber-800 mb-1">"Querer Fazer" (Postura Comportamental)</p>
+                    <p class="text-sm text-slate-600">Auto-disciplina, resiliência em oscilações de faturamento, proatividade na prospecção e foco em feedbacks.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="archetypes" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 mb-2">
+                        Matriz Diagnóstica
+                    </span>
+                    <h2 class="text-2xl font-bold text-slate-900">Perfis Dominantes de Gestão e Atuação</h2>
+                    <p class="text-slate-600 text-sm mt-1">
+                        Explore os perfis gerados pelo cruzamento dos três pilares CHA. Clique nos cards abaixo para visualizar os riscos e estratégias.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <button onclick="selectArchetypeCard('teorico')" id="arch-btn-teorico" class="text-left p-5 rounded-xl border-2 border-slate-200 hover:border-indigo-500 transition-all bg-slate-50/50">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Perfil 1</span>
+                        <span class="text-lg">📚</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-1">O Teórico Sem Prática</h3>
+                    <p class="text-xs text-slate-500">Conhecimento Alto | Habilidade e Atitude Baixas/Médias</p>
+                </button>
+
+                <button onclick="selectArchetypeCard('executor')" id="arch-btn-executor" class="text-left p-5 rounded-xl border-2 border-slate-200 hover:border-emerald-500 transition-all bg-slate-50/50">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Perfil 2</span>
+                        <span class="text-lg">⚡</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-1">O Executor Impulsivo</h3>
+                    <p class="text-xs text-slate-500">Habilidade/Atitude Altas | Conhecimento Baixo</p>
+                </button>
+
+                <button onclick="selectArchetypeCard('visionario')" id="arch-btn-visionario" class="text-left p-5 rounded-xl border-2 border-slate-200 hover:border-amber-500 transition-all bg-slate-50/50">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Perfil 3</span>
+                        <span class="text-lg">🚀</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-1">O Visionário Sem Estrutura</h3>
+                    <p class="text-xs text-slate-500">Atitude Alta | Conhecimento/Habilidade Baixos</p>
+                </button>
+
+                <button onclick="selectArchetypeCard('equilibrado')" id="arch-btn-equilibrado" class="text-left p-5 rounded-xl border-2 border-slate-200 hover:border-teal-500 transition-all bg-slate-50/50">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-teal-600">Perfil 4</span>
+                        <span class="text-lg">🏆</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-1">Empreendedor Equilibrado</h3>
+                    <p class="text-xs text-slate-500">C, H e A Elevados (> 24 pontos cada)</p>
+                </button>
+            </div>
+
+            <div id="archetype-detail-panel" class="p-6 rounded-xl bg-slate-900 text-white mt-4 transition-all">
+            </div>
+        </section>
+
+        <section id="assessment" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-6">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-slate-100 pb-6">
+                <div>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 mb-2">
+                        Questionário Interativo Adaptável
+                    </span>
+                    <h2 class="text-2xl font-bold text-slate-900">Teste de Autoavaliação CHA</h2>
+                    <p class="text-slate-600 text-sm mt-1">
+                        Selecione seu perfil de atuação abaixo. Responda às 18 perguntas atribuindo notas de <strong>1 a 5</strong>.
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-100 p-2 rounded-xl no-print border border-slate-200">
+                    <span class="text-xs font-bold text-slate-700 px-2">Modalidade de Atuação:</span>
+                    <div class="inline-flex rounded-lg bg-white p-1 shadow-sm border border-slate-200">
+                        <button onclick="setWorkMode('team')" id="mode-btn-team" class="px-3.5 py-1.5 text-xs font-bold rounded-md transition-all bg-indigo-600 text-white shadow-sm">
+                            🏢 Com Equipe / Empresa
+                        </button>
+                        <button onclick="setWorkMode('solo')" id="mode-btn-solo" class="px-3.5 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition-all">
+                            👤 Solo / Autônomo (Sem Equipe)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200/60 no-print text-xs">
+                <div class="flex items-center gap-2">
+                    <span class="font-semibold text-slate-500">Simulações Rápidas:</span>
+                    <button onclick="loadPreset('teorico')" class="px-2.5 py-1 rounded bg-white hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 transition-colors">Exemplo Teórico</button>
+                    <button onclick="loadPreset('executor')" class="px-2.5 py-1 rounded bg-white hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 transition-colors">Exemplo Executor</button>
+                    <button onclick="loadPreset('visionario')" class="px-2.5 py-1 rounded bg-white hover:bg-amber-50 hover:text-amber-700 border border-slate-200 transition-colors">Exemplo Visionário</button>
+                    <button onclick="loadPreset('equilibrado')" class="px-2.5 py-1 rounded bg-white hover:bg-teal-50 hover:text-teal-700 border border-slate-200 transition-colors">Exemplo Equilibrado</button>
+                </div>
+                <button onclick="resetAssessment()" class="px-3 py-1 font-medium text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors">
+                    🔄 Limpar Repostas
+                </button>
+            </div>
+
+            <div class="bg-indigo-900 text-white rounded-xl p-4 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+                <div class="flex items-center gap-2 font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="progress-text" class="font-bold text-white">0 / 18</span> respondidas
+                </div>
+                <div class="w-full sm:w-48 bg-indigo-950 rounded-full h-2.5 overflow-hidden border border-indigo-700/50">
+                    <div id="progress-bar" class="bg-emerald-400 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <div class="flex items-center gap-4 text-xs font-bold">
+                    <span class="text-indigo-200">C: <span id="quick-c" class="text-white">0</span>/30</span>
+                    <span class="text-emerald-200">H: <span id="quick-h" class="text-white">0</span>/30</span>
+                    <span class="text-amber-200">A: <span id="quick-a" class="text-white">0</span>/30</span>
+                </div>
+            </div>
+
+            <form id="cha-form" onsubmit="event.preventDefault();" class="space-y-8">
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between bg-indigo-50/80 p-3.5 rounded-xl border border-indigo-100">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">C</span>
+                            <h3 class="font-bold text-slate-900 text-base">Pilar 1: CONHECIMENTOS ("Saber")</h3>
+                        </div>
+                        <span class="text-xs font-bold text-indigo-800 bg-white px-2.5 py-1 rounded-md border border-indigo-200 shadow-sm">
+                            Subtotal: <span id="subtotal-c">0</span> / 30
+                        </span>
+                    </div>
+
+                    <div id="group-c" class="space-y-4 divide-y divide-slate-100">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-100">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">H</span>
+                            <h3 class="font-bold text-slate-900 text-base">Pilar 2: HABILIDADES ("Saber Fazer")</h3>
+                        </div>
+                        <span class="text-xs font-bold text-emerald-800 bg-white px-2.5 py-1 rounded-md border border-emerald-200 shadow-sm">
+                            Subtotal: <span id="subtotal-h">0</span> / 30
+                        </span>
+                    </div>
+
+                    <div id="group-h" class="space-y-4 divide-y divide-slate-100">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between bg-amber-50/80 p-3.5 rounded-xl border border-amber-100">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-amber-600 text-white flex items-center justify-center font-bold text-xs">A</span>
+                            <h3 class="font-bold text-slate-900 text-base">Pilar 3: ATITUDES ("Querer Fazer")</h3>
+                        </div>
+                        <span class="text-xs font-bold text-amber-800 bg-white px-2.5 py-1 rounded-md border border-amber-200 shadow-sm">
+                            Subtotal: <span id="subtotal-a">0</span> / 30
+                        </span>
+                    </div>
+
+                    <div id="group-a" class="space-y-4 divide-y divide-slate-100">
+                    </div>
+                </div>
+
+            </form>
+        </section>
+
+        <section id="dashboard" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-8">
+            <div>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 mb-2">
+                    Painel de Resultados
+                </span>
+                <h2 class="text-2xl font-bold text-slate-900">Diagnóstico Estrutural & Gráficos</h2>
+                <p class="text-slate-600 text-sm mt-1">
+                    Veja seu equilíbrio entre Conhecimentos, Habilidades e Atitudes. Os gráficos atualizam em tempo real conforme você preenche o teste.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="p-5 rounded-xl bg-slate-900 text-white flex flex-col justify-between">
+                    <span class="text-xs text-slate-400 font-medium">Pontuação Total</span>
+                    <div class="my-2">
+                        <span id="score-total" class="text-3xl font-extrabold">0</span>
+                        <span class="text-slate-400 text-sm"> / 90</span>
+                    </div>
+                    <span id="maturity-badge" class="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 w-fit">
+                        Pendente
+                    </span>
+                </div>
+
+                <div class="p-5 rounded-xl bg-indigo-50 border border-indigo-100 flex flex-col justify-between">
+                    <span class="text-xs text-indigo-700 font-semibold uppercase tracking-wider">Conhecimento (C)</span>
+                    <div class="my-2">
+                        <span id="score-c" class="text-3xl font-extrabold text-indigo-900">0</span>
+                        <span class="text-indigo-400 text-sm"> / 30</span>
+                    </div>
+                    <span id="level-c" class="text-xs font-medium text-indigo-800">Média: 0.0</span>
+                </div>
+
+                <div class="p-5 rounded-xl bg-emerald-50 border border-emerald-100 flex flex-col justify-between">
+                    <span class="text-xs text-emerald-700 font-semibold uppercase tracking-wider">Habilidade (H)</span>
+                    <div class="my-2">
+                        <span id="score-h" class="text-3xl font-extrabold text-emerald-900">0</span>
+                        <span class="text-emerald-400 text-sm"> / 30</span>
+                    </div>
+                    <span id="level-h" class="text-xs font-medium text-emerald-800">Média: 0.0</span>
+                </div>
+
+                <div class="p-5 rounded-xl bg-amber-50 border border-amber-100 flex flex-col justify-between">
+                    <span class="text-xs text-amber-700 font-semibold uppercase tracking-wider">Atitude (A)</span>
+                    <div class="my-2">
+                        <span id="score-a" class="text-3xl font-extrabold text-amber-900">0</span>
+                        <span class="text-amber-400 text-sm"> / 30</span>
+                    </div>
+                    <span id="level-a" class="text-xs font-medium text-amber-800">Média: 0.0</span>
+                </div>
+            </div>
+
+            <div id="dominant-profile-box" class="p-6 rounded-2xl bg-indigo-900 text-white space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-indigo-300">Perfil Dominante Identificado</span>
+                    <span id="profile-tag" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/30 border border-indigo-400 text-indigo-100">Calculando...</span>
+                </div>
+                <h3 id="profile-title" class="text-2xl font-extrabold">Aguardando Preenchimento do Teste</h3>
+                <p id="profile-desc" class="text-slate-200 text-sm leading-relaxed">
+                    Responda às questões acima para visualizar seu diagnóstico comportamental e empresarial completo.
+                </p>
+                <div id="profile-highlights" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-indigo-800 text-xs">
+                    <div>
+                        <span class="font-bold text-indigo-300">Principais Alavancas:</span>
+                        <p id="profile-strengths" class="text-slate-300 mt-1">-</p>
+                    </div>
+                    <div>
+                        <span class="font-bold text-amber-300">Pontos de Atenção / Gargalos:</span>
+                        <p id="profile-risks" class="text-slate-300 mt-1">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center pt-4">
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/80">
+                    <h3 class="text-base font-bold text-slate-900 mb-1 text-center">Equilíbrio do Perfil CHA</h3>
+                    <p class="text-xs text-slate-500 mb-4 text-center">Comparação da sua pontuação real com a meta de consolidação (24 pts/pilar)</p>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/80">
+                    <h3 class="text-base font-bold text-slate-900 mb-1 text-center">Distribuição Absoluta por Pilar</h3>
+                    <p class="text-xs text-slate-500 mb-4 text-center">Visualização do total de pontos em cada dimensão do CHA</p>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="action-plan" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
+                <div>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 mb-2">
+                        Plano de Desenvolvimento Individual (PDI)
+                    </span>
+                    <h2 class="text-2xl font-bold text-slate-900">Plano de Ação Personalizado</h2>
+                    <p class="text-slate-600 text-sm mt-1">
+                        Roadmap de 30, 60 e 90 dias ajustado automaticamente para a modalidade <strong id="pdi-mode-label" class="text-indigo-600">Com Equipe</strong> com base no seu principal gargalo.
+                    </p>
+                </div>
+
+                <button onclick="window.print()" class="no-print inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 text-white font-medium text-sm hover:bg-slate-800 transition-colors">
+                    <span>🖨️</span> Imprimir Relatório
+                </button>
+            </div>
+
+            <div id="bottleneck-alert" class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm flex items-start gap-3">
+                <span class="text-xl">💡</span>
+                <div>
+                    <strong class="font-bold">Gargalo Prioritário Detectado:</strong>
+                    <span id="bottleneck-text">Carregando avaliação...</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-100 text-indigo-800">30 Dias</span>
+                            <span class="text-xs text-slate-500 font-medium">Curto Prazo</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 mb-2" id="pdi-30-title">Ação Imediata</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4" id="pdi-30-desc">
+                            Complete o questionário para ver as recomendações de curto prazo.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-200/80">
+                        <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Indicador de Sucesso</span>
+                        <p class="text-xs font-medium text-slate-800 mt-0.5" id="pdi-30-kpi">-</p>
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-100 text-emerald-800">60 Dias</span>
+                            <span class="text-xs text-slate-500 font-medium">Médio Prazo</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 mb-2" id="pdi-60-title">Consolidação de Processos</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4" id="pdi-60-desc">
+                            Complete o questionário para ver as recomendações de médio prazo.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-200/80">
+                        <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Indicador de Sucesso</span>
+                        <p class="text-xs font-medium text-slate-800 mt-0.5" id="pdi-60-kpi">-</p>
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-100 text-amber-800">90 Dias</span>
+                            <span class="text-xs text-slate-500 font-medium">Longo Prazo</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 mb-2" id="pdi-90-title">Expansão e Mentoria</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4" id="pdi-90-desc">
+                            Complete o questionário para ver as recomendações de longo prazo.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-200/80">
+                        <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Indicador de Sucesso</span>
+                        <p class="text-xs font-medium text-slate-800 mt-0.5" id="pdi-90-kpi">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 p-6 rounded-xl bg-slate-900 text-white space-y-4">
+                <h3 class="font-bold text-base">Recomendações Práticas Adaptadas ao Seu Perfil</h3>
+                <div id="pdi-specific-recommendations" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 py-6 mt-12 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs space-y-2">
+            <p>Instrumento de Avaliação de Perfil Empresarial & Solo - Metodologia CHA (Conhecimentos, Habilidades e Atitudes)</p>
+            <p class="text-slate-500">Ferramenta interativa adaptada para Gestores com Equipe e Empreendedores Individuais sem funcionários.</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentMode = 'team'; // 'team' or 'solo'
+
+        const questionsData = {
+            team: {
+                C: [
+                    { id: "C1", text: "Domino conceitos de gestão financeira empresarial (DRE, Fluxo de Caixa, Margem de Lucro, Ponto de Equilíbrio e Margem de Contribuição)." },
+                    { id: "C2", text: "Compreendo o perfil do meu público-alvo, a jornada do cliente e as estratégias de posicionamento da minha empresa no mercado." },
+                    { id: "C3", text: "Conheço a legislação aplicável ao meu negócio (obrigações tributárias, trabalhistas e regulatórias com colaboradores/fornecedores)." },
+                    { id: "C4", text: "Sei como estruturar um plano de negócios ou modelo de negócios funcional (como o Business Model Canvas ou equivalente)." },
+                    { id: "C5", text: "Conheço as métricas e indicadores de desempenho (KPIs) essenciais para medir a saúde da empresa e a produtividade da equipe." },
+                    { id: "C6", text: "Entendo as tendências tecnológicas e as transformações do meu setor para antecipar mudanças e manter o negócio competitivo." }
+                ],
+                H: [
+                    { id: "H1", text: "Consigo delegar tarefas de forma clara para a equipe e acompanhar a execução sem microgerenciar ou centralizar tudo." },
+                    { id: "H2", text: "Tenho facilidade em negociar prazos, preços e contratos estratégicos com fornecedores, parceiros e clientes exigentes." },
+                    { id: "H3", text: "Consigo transformar dados, relatórios e métricas da equipe em decisões estratégicas rápidas e objetivas." },
+                    { id: "H4", text: "Tenho habilidade para comunicar a visão da empresa e influenciar/motivar colaboradores e parceiros em prol dos mesmos objetivos." },
+                    { id: "H5", text: "Organizo minha rotina com eficiência, priorizando atividades de alto impacto estratégico em vez de apagar incêndios diários." },
+                    { id: "H6", text: "Resolvo conflitos internos da equipe e problemas operacionais inesperados com pragmatismo, agilidade e foco na solução." }
+                ],
+                A: [
+                    { id: "A1", text: "Mantenho a calma e o foco em saídas viáveis mesmo diante de crises financeiras, perdas de clientes relevantes ou imprevistos graves." },
+                    { id: "A2", text: "Tenho iniciativa constante para buscar novas oportunidades de negócios, inovar em produtos/serviços e antecipar tendências." },
+                    { id: "A3", text: "Assumo responsabilidade total (Visão de Dono) pelos resultados da empresa, sem terceirizar culpas a colaboradores ou ao mercado." },
+                    { id: "A4", text: "Aceito correr riscos calculados após analisar cenários, sem travar diante da incerteza do ambiente empreendedor." },
+                    { id: "A5", text: "Busco feedback constante de clientes, mentores e equipe, utilizando críticas construtivas para evoluir continuamente." },
+                    { id: "A6", text: "Mantenho disciplina, ética e consistência no trabalho, demonstrando liderança mesmo em momentos de pouca motivação." }
+                ]
+            },
+            solo: {
+                C: [
+                    { id: "C1", text: "Domino a gestão financeira individual do negócio (Fluxo de Caixa, Precificação Hora/Projeto, Margem de Lucro e Ponto de Equilíbrio Solo)." },
+                    { id: "C2", text: "Compreendo com clareza o perfil do meu Cliente Ideal (ICP), minha Proposta Única de Valor e como me posicionar com autoridade no mercado." },
+                    { id: "C3", text: "Conheço o enquadramento jurídico e tributário do profissional autônomo/MEI (obrigações fiscais, emissão de NFs e impostos)." },
+                    { id: "C4", text: "Sei como estruturar e formalizar meu portfólio de produtos/serviços e minha esteira de ofertas de maneira sustentável." },
+                    { id: "C5", text: "Conheço os indicadores essenciais do meu trabalho solo (faturamento por hora, taxa de conversão de propostas e ocupação de agenda)." },
+                    { id: "C6", text: "Acompanho tendências tecnológicas, inteligência artificial e ferramentas no-code para automatizar processos sem precisar de funcionários." }
+                ],
+                H: [
+                    { id: "H1", text: "Consigo automatizar tarefas repetitivas ou terceirizar demandas operacionais pontuais para não travar minha capacidade produtiva." },
+                    { id: "H2", text: "Tenho facilidade em negociar honorários, prazos e escopos com clientes de forma confiante, sem desvalorizar meu trabalho." },
+                    { id: "H3", text: "Consigo analisar métricas simples de faturamento e vendas para ajustar rapidamente meus preços e estratégias de captação." },
+                    { id: "H4", text: "Comunico com clareza a proposta de valor dos meus serviços, transmitindo extrema confiança na prospecção de novos clientes." },
+                    { id: "H5", text: "Organizo minha rotina diária de trabalho solo com disciplina, dividindo tempo entre execução técnica, vendas e administração." },
+                    { id: "H6", text: "Resolvo imprevistos operacionais e insatisfações de clientes diretamente, com agilidade, foco no cliente e diplomacia." }
+                ],
+                A: [
+                    { id: "A1", text: "Mantenho a estabilidade emocional e resiliência em períodos de oscilação de faturamento ou sazonalidade na entrada de clientes." },
+                    { id: "A2", text: "Tenho proatividade diária para prospectar novos clientes, criar novos formatos de serviços e não depender de indicação passiva." },
+                    { id: "A3", text: "Assumo auto-responsabilidade integral pelos meus prazos, qualidade das entregas e reputação profissional, sem dar desculpas." },
+                    { id: "A4", text: "Assumo riscos calculados para investir em mim mesmo, em novas ferramentas ou em mudar de nicho para cobrar mais caro." },
+                    { id: "A5", text: "Coleto feedbacks e depoimentos formais dos meus clientes com frequência para aprimorar minhas entregas e gerar prova social." },
+                    { id: "A6", text: "Mantenho auto-disciplina rigorosa, ética e consistência nas entregas do dia a dia, mesmo trabalhando sozinho e sem supervisão." }
+                ]
+            }
+        };
+
+        const archetypesData = {
+            team: {
+                teorico: {
+                    title: "O Teórico Sem Prática",
+                    subtitle: "Conhecimento Alto (C) | Habilidade (H) e Atitude (A) Baixas/Médias",
+                    desc: "Você possui excelente bagagem conceitual, estuda gestão e conhece os números do mercado. No entanto, enfrenta dificuldades na execução prática, receio de assumir riscos ou paralisia na hora de delegar e negociar.",
+                    strengths: "Domínio de planilhas, planejamento financeiro, entendimento teórico de marketing e processos formais.",
+                    risks: "Paralisia por análise, perda de oportunidades por excesso de planejamento e dificuldade em liderar na prática."
+                },
+                executor: {
+                    title: "O Executor Impulsivo",
+                    subtitle: "Habilidade (H) e Atitude (A) Altas | Conhecimento (C) Baixo",
+                    desc: "Você tem enorme garra, trabalha duro e resolve problemas no dia a dia com agilidade. Porém, a falta de controle financeiro formal e o desconhecimento de indicadores expõem a empresa a riscos desnecessários.",
+                    strengths: "Alta produtividade, facilidade de negociação, resiliência e foco em entregar resultados rapidamente.",
+                    risks: "Crescimento desordenado, problemas de fluxo de caixa, desconhecimento de impostos e retrabalho operacional."
+                },
+                visionario: {
+                    title: "O Visionário Sem Estrutura",
+                    subtitle: "Atitude (A) Alta | Conhecimento (C) e Habilidade (H) Baixos",
+                    desc: "Você é altamente motivado, entusiasmado e enxerga oportunidades em todo lugar. Contudo, falta disciplina operacional, controle financeiro e processos para transformar ideias em negócios sustentáveis.",
+                    strengths: "Proatividade elevada, coragem para assumir riscos, apetite por inovação e resiliência diante de negativas.",
+                    risks: "Projetos inacabados, desorganização financeira crítica, perda de foco e desgaste de credibilidade no mercado."
+                },
+                equilibrado: {
+                    title: "O Empreendedor Equilibrado / Consolidado",
+                    subtitle: "Conhecimento (C), Habilidade (H) e Atitude (A) Elevados (> 24 pontos cada)",
+                    desc: "Você equilibra rigor técnico, capacidade executiva e maturidade comportamental. Consegue planejar com precisão, liderar equipes e agir com resiliência e foco estratégico.",
+                    strengths: "Visão sistêmica do negócio, liderança inspiradora, gestão financeira sólida e inovação consistente.",
+                    risks: "Zona de conforto, complacência com resultados passados ou dificuldade para delegar grandes blocos de decisão para escala."
+                }
+            },
+            solo: {
+                teorico: {
+                    title: "O Especialista Teórico Solo",
+                    subtitle: "Conhecimento Alto (C) | Habilidade (H) e Atitude (A) Baixas/Médias",
+                    desc: "Você é extremamente capacitado do ponto de vista técnico e conceitual. No entanto, trava na hora de prospectar clientes ativos, negociar preços justos ou criar ofertas práticas do seu trabalho.",
+                    strengths: "Profundo domínio técnico, excelência na metodologia, planejamento conceitual impecável.",
+                    risks: "Subprecificação, timidez na venda direta, excesso de horas estudando e poucas horas vendendo."
+                },
+                executor: {
+                    title: "O Autônomo Atarefado / Apagador de Incêndios",
+                    subtitle: "Habilidade (H) e Atitude (A) Altas | Conhecimento (C) Baixo",
+                    desc: "Você trabalha duro de manhã à noite entregando serviços aos clientes. Porém, não sabe calcular o custo real da sua hora, não controla o fluxo de caixa pessoal/profissional e vive na montanha-russa do faturamento.",
+                    strengths: "Capacidade de entrega veloz, garra para resolver demandas de clientes, grande energia executiva.",
+                    risks: "Esgotamento físico (burnout), dependência total da presença física para faturar e vulnerabilidade financeira."
+                },
+                visionario: {
+                    title: "O Solopreneur Inquieto Sem Foco",
+                    subtitle: "Atitude (A) Alta | Conhecimento (C) e Habilidade (H) Baixos",
+                    desc: "Você tem energia de sobra, lança novos projetos e marcas no Instagram frequentemente, mas abandona serviços pela metade, não tem processos de entrega e tem dificuldades para fidelizar clientes.",
+                    strengths: "Entusiasmo contagiante, coragem para criar coisas novas, apetite para testar novos canais.",
+                    risks: "Falta de constância, desorganização de prazos e agendas, imagem de pouca credibilidade aos clientes."
+                },
+                equilibrado: {
+                    title: "O Profissional Solo Consolidado / Estratégico",
+                    subtitle: "Conhecimento (C), Habilidade (H) e Atitude (A) Elevados (> 24 pontos cada)",
+                    desc: "Você domina sua entrega técnica, precifica com margem excelente, utiliza ferramentas de automação para não se sobrecarregar e seleciona clientes a dedo.",
+                    strengths: "Alta rentabilidade por hora, fluxo previsível de clientes, excelente automação de processos e reputação sólida.",
+                    risks: "Teto de faturamento baseado no próprio tempo (necessidade de migrar para produtos digitais ou terceirização para escalar)."
+                }
+            }
+        };
+
+        const presets = {
+            teorico: { C1:5, C2:5, C3:4, C4:5, C5:4, C6:4, H1:2, H2:2, H3:3, H4:2, H5:2, H6:3, A1:2, A2:3, A3:3, A4:2, A5:3, A6:3 },
+            executor: { C1:2, C2:3, C3:2, C4:2, C5:2, C6:3, H1:4, H2:5, H3:4, H4:5, H5:4, H6:5, A1:5, A2:4, A3:5, A4:4, A5:3, A6:5 },
+            visionario: { C1:2, C2:2, C3:1, C4:2, C5:2, C6:3, H1:2, H2:3, H3:2, H4:3, H5:2, H6:2, A1:5, A2:5, A3:5, A4:5, A5:4, A6:4 },
+            equilibrado: { C1:5, C2:5, C3:4, C4:5, C5:4, C6:5, H1:5, H2:4, H3:5, H4:5, H5:4, H6:5, A1:5, A2:5, A3:5, A4:4, A5:5, A6:5 }
+        };
+
+        let currentScores = { C: {}, H: {}, A: {} };
+        let radarChartInstance = null;
+        let barChartInstance = null;
+
+        function initApp() {
+            renderQuestions();
+            selectArchetypeCard('equilibrado');
+            initCharts();
+            updateAll();
+        }
+
+        function setWorkMode(mode) {
+            currentMode = mode;
+            const btnTeam = document.getElementById('mode-btn-team');
+            const btnSolo = document.getElementById('mode-btn-solo');
+            const labelPdi = document.getElementById('pdi-mode-label');
+
+            if (mode === 'team') {
+                btnTeam.className = "px-3.5 py-1.5 text-xs font-bold rounded-md transition-all bg-indigo-600 text-white shadow-sm";
+                btnSolo.className = "px-3.5 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition-all";
+                labelPdi.textContent = "Com Equipe / Empresa";
+            } else {
+                btnSolo.className = "px-3.5 py-1.5 text-xs font-bold rounded-md transition-all bg-indigo-600 text-white shadow-sm";
+                btnTeam.className = "px-3.5 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition-all";
+                labelPdi.textContent = "Solo / Profissional Autônomo";
+            }
+
+            renderQuestions();
+            // Reapply scores if existing
+            Object.keys(currentScores.C).forEach(qId => {
+                const val = currentScores.C[qId];
+                const input = document.querySelector(`input[name="${qId}"][value="${val}"]`);
+                if (input) input.checked = true;
+            });
+            Object.keys(currentScores.H).forEach(qId => {
+                const val = currentScores.H[qId];
+                const input = document.querySelector(`input[name="${qId}"][value="${val}"]`);
+                if (input) input.checked = true;
+            });
+            Object.keys(currentScores.A).forEach(qId => {
+                const val = currentScores.A[qId];
+                const input = document.querySelector(`input[name="${qId}"][value="${val}"]`);
+                if (input) input.checked = true;
+            });
+
+            selectArchetypeCard('equilibrado');
+            updateAll();
+        }
+
+        function renderQuestions() {
+            const categories = [
+                { key: 'C', containerId: 'group-c', colorClass: 'indigo' },
+                { key: 'H', containerId: 'group-h', colorClass: 'emerald' },
+                { key: 'A', containerId: 'group-a', colorClass: 'amber' }
+            ];
+
+            const activeQuestions = questionsData[currentMode];
+
+            categories.forEach(cat => {
+                const container = document.getElementById(cat.containerId);
+                container.innerHTML = '';
+
+                activeQuestions[cat.key].forEach(q => {
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'pt-4 pb-2 flex flex-col md:flex-row md:items-center justify-between gap-4';
+                    
+                    qDiv.innerHTML = `
+                        <div class="flex items-start gap-3 max-w-xl">
+                            <span class="font-bold text-xs px-2 py-1 bg-slate-100 rounded text-slate-700 border border-slate-200 mt-0.5">${q.id}</span>
+                            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">${q.text}</p>
+                        </div>
+                        <div class="flex items-center gap-1.5 sm:gap-2 self-start md:self-center">
+                            ${[1, 2, 3, 4, 5].map(val => `
+                                <label class="cursor-pointer text-center">
+                                    <input type="radio" name="${q.id}" value="${val}" onchange="handleScoreChange('${cat.key}', '${q.id}', ${val})" class="sr-only peer">
+                                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-slate-200 peer-checked:bg-${cat.colorClass}-600 peer-checked:text-white peer-checked:border-${cat.colorClass}-600 peer-checked:font-bold flex items-center justify-center text-xs text-slate-600 hover:bg-slate-100 transition-all">
+                                        ${val}
+                                    </div>
+                                </label>
+                            `).join('')}
+                        </div>
+                    `;
+                    container.appendChild(qDiv);
+                });
+            });
+        }
+
+        function handleScoreChange(pillar, qId, val) {
+            currentScores[pillar][qId] = val;
+            updateAll();
+        }
+
+        function loadPreset(type) {
+            const presetData = presets[type];
+            if (!presetData) return;
+
+            Object.keys(presetData).forEach(qId => {
+                const pillar = qId.charAt(0);
+                const val = presetData[qId];
+                currentScores[pillar][qId] = val;
+
+                const input = document.querySelector(`input[name="${qId}"][value="${val}"]`);
+                if (input) {
+                    input.checked = true;
+                }
+            });
+
+            updateAll();
+        }
+
+        function resetAssessment() {
+            currentScores = { C: {}, H: {}, A: {} };
+            const inputs = document.querySelectorAll('#cha-form input[type="radio"]');
+            inputs.forEach(input => input.checked = false);
+            updateAll();
+        }
+
+        function calculateSubtotals() {
+            let totalC = 0, countC = 0;
+            let totalH = 0, countH = 0;
+            let totalA = 0, countA = 0;
+
+            Object.values(currentScores.C).forEach(v => { totalC += v; countC++; });
+            Object.values(currentScores.H).forEach(v => { totalH += v; countH++; });
+            Object.values(currentScores.A).forEach(v => { totalA += v; countA++; });
+
+            return {
+                C: totalC, countC,
+                H: totalH, countH,
+                A: totalA, countA,
+                total: totalC + totalH + totalA,
+                answeredCount: countC + countH + countA
+            };
+        }
+
+        function updateAll() {
+            const res = calculateSubtotals();
+
+            document.getElementById('subtotal-c').textContent = res.C;
+            document.getElementById('subtotal-h').textContent = res.H;
+            document.getElementById('subtotal-a').textContent = res.A;
+
+            document.getElementById('quick-c').textContent = res.C;
+            document.getElementById('quick-h').textContent = res.H;
+            document.getElementById('quick-a').textContent = res.A;
+
+            document.getElementById('progress-text').textContent = `${res.answeredCount} / 18`;
+            const pct = Math.round((res.answeredCount / 18) * 100);
+            document.getElementById('progress-bar').style.width = `${pct}%`;
+
+            document.getElementById('score-total').textContent = res.total;
+            document.getElementById('score-c').textContent = res.C;
+            document.getElementById('score-h').textContent = res.H;
+            document.getElementById('score-a').textContent = res.A;
+
+            const avgC = res.countC > 0 ? (res.C / 6).toFixed(1) : '0.0';
+            const avgH = res.countH > 0 ? (res.H / 6).toFixed(1) : '0.0';
+            const avgA = res.countA > 0 ? (res.A / 6).toFixed(1) : '0.0';
+
+            document.getElementById('level-c').textContent = `Média: ${avgC}`;
+            document.getElementById('level-h').textContent = `Média: ${avgH}`;
+            document.getElementById('level-a').textContent = `Média: ${avgA}`;
+
+            updateMaturityBadge(res.total, res.answeredCount);
+            updateDominantProfile(res);
+            updateActionPlan(res);
+            updateCharts(res);
+            updateSpecificRecommendations();
+        }
+
+        function updateMaturityBadge(total, count) {
+            const badge = document.getElementById('maturity-badge');
+            if (count < 18) {
+                badge.textContent = `Em preenchimento (${count}/18)`;
+                badge.className = "inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 w-fit";
+            } else if (total >= 72) {
+                badge.textContent = "Perfil Consolidado / Avançado";
+                badge.className = "inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 w-fit";
+            } else if (total >= 50) {
+                badge.textContent = "Perfil em Desenvolvimento";
+                badge.className = "inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 w-fit";
+            } else {
+                badge.textContent = "Perfil Crítico / Em Formação";
+                badge.className = "inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 w-fit";
+            }
+        }
+
+        function updateDominantProfile(res) {
+            const titleEl = document.getElementById('profile-title');
+            const tagEl = document.getElementById('profile-tag');
+            const descEl = document.getElementById('profile-desc');
+            const strengthsEl = document.getElementById('profile-strengths');
+            const risksEl = document.getElementById('profile-risks');
+
+            if (res.answeredCount < 6) {
+                titleEl.textContent = "Preencha o questionário acima";
+                tagEl.textContent = "Pendente";
+                descEl.textContent = "Responda às questões para gerar um diagnóstico preciso sobre o seu perfil de gestão e operação.";
+                strengthsEl.textContent = "-";
+                risksEl.textContent = "-";
+                return;
+            }
+
+            const c = res.C;
+            const h = res.H;
+            const a = res.A;
+
+            let key = "equilibrado";
+
+            if (c >= 24 && h >= 24 && a >= 24) {
+                key = "equilibrado";
+            } else if (c > h + 3 && c > a + 3) {
+                key = "teorico";
+            } else if (h >= 20 && a >= 20 && c < 18) {
+                key = "executor";
+            } else if (a >= 22 && c < 18 && h < 18) {
+                key = "visionario";
+            } else {
+                if (c >= h && c >= a) key = "teorico";
+                else if (h >= c && h >= a) key = "executor";
+                else key = "visionario";
+            }
+
+            const activeSet = archetypesData[currentMode];
+            const data = activeSet[key];
+
+            titleEl.textContent = data.title;
+            tagEl.textContent = data.subtitle;
+            descEl.textContent = data.desc;
+            strengthsEl.textContent = data.strengths;
+            risksEl.textContent = data.risks;
+        }
+
+        function updateActionPlan(res) {
+            const bAlertText = document.getElementById('bottleneck-text');
+            const p30Title = document.getElementById('pdi-30-title');
+            const p30Desc = document.getElementById('pdi-30-desc');
+            const p30Kpi = document.getElementById('pdi-30-kpi');
+
+            const p60Title = document.getElementById('pdi-60-title');
+            const p60Desc = document.getElementById('pdi-60-desc');
+            const p60Kpi = document.getElementById('pdi-60-kpi');
+
+            const p90Title = document.getElementById('pdi-90-title');
+            const p90Desc = document.getElementById('pdi-90-desc');
+            const p90Kpi = document.getElementById('pdi-90-kpi');
+
+            if (res.answeredCount < 6) {
+                bAlertText.textContent = "Preencha ao menos 6 perguntas para calcularmos seus gargalos de prioridade.";
+                return;
+            }
+
+            const scores = [
+                { name: "Conhecimento (C - Saber)", score: res.C, key: "C" },
+                { name: "Habilidade (H - Saber Fazer)", score: res.H, key: "H" },
+                { name: "Atitude (A - Querer Fazer)", score: res.A, key: "A" }
+            ];
+
+            scores.sort((a, b) => a.score - b.score);
+            const lowest = scores[0];
+
+            if (currentMode === 'team') {
+                if (lowest.key === "C") {
+                    bAlertText.textContent = "Seu menor pilar é CONHECIMENTO. É necessário dominar conceitos financeiros, tributários e estratégicos para sustentar o crescimento do negócio.";
+                    p30Title.textContent = "Ajuste do Ponto de Equilíbrio & Finanças";
+                    p30Desc.textContent = "Mapear custos fixos e variáveis, recalcular a Margem de Contribuição e montar uma planilha atualizada de Fluxo de Caixa semanal.";
+                    p30Kpi.textContent = "Planilha de caixa e margens atualizada em 30 dias";
+
+                    p60Title.textContent = "Capacitação em Gestão Financeira";
+                    p60Desc.textContent = "Concluir curso curto de 'Finanças para Não Financeiros' (ex: SEBRAE) e revisar enquadramento tributário com o contador.";
+                    p60Kpi.textContent = "Certificado de conclusão e relatório de auditoria fiscal";
+
+                    p90Title.textContent = "Modelagem de Negócios & KPIs";
+                    p90Desc.textContent = "Estruturar o Business Model Canvas completo e implementar painel simples de KPIs comerciais e operacionais.";
+                    p90Kpi.textContent = "Dashboard de indicadores monitorado semanalmente";
+
+                } else if (lowest.key === "H") {
+                    bAlertText.textContent = "Seu menor pilar é HABILIDADE. O foco deve ser transformar teoria em execução prática, aprendendo a delegar, gerir o tempo e negociar.";
+                    p30Title.textContent = "Mapeamento & Delegação de Tarefas";
+                    p30Desc.textContent = "Listar todas as atividades diárias, separar o operacional do estratégico e treinar um colaborador para assumir tarefas repetitivas.";
+                    p30Kpi.textContent = "Liberação de ao menos 5 horas/semana na agenda do empresário";
+
+                    p60Title.textContent = "Rituais de Liderança & Processos";
+                    p60Desc.textContent = "Implementar rituais de reuniões 1-on-1 e de acompanhamento semanal com equipe via software de projetos (ex: Trello, Asana).";
+                    p60Kpi.textContent = "100% das tarefas da equipe acompanhadas digitalmente";
+
+                    p90Title.textContent = "Treinamento de Negociação Prática";
+                    p90Desc.textContent = "Revisar contratos com principais fornecedores e renegociar prazos de pagamento e margens de compra.";
+                    p90Kpi.textContent = "Redução de no mínimo 5% nos custos operacionais diretos";
+
+                } else {
+                    bAlertText.textContent = "Seu menor pilar é ATITUDE. O desafio é desenvolver resiliência emocional, proatividade, tolerância à incerteza e abertura a feedbacks.";
+                    p30Title.textContent = "Cultura de Feedback & Growth Mindset";
+                    p30Desc.textContent = "Agendar rodadas de escuta ativa com clientes principais e liderados para coletar pontos céticos e críticas construtivas.";
+                    p30Kpi.textContent = "Relatório com 10 feedbacks coletados e ações corretivas definidas";
+
+                    p60Title.textContent = "Rede de Mentoria & Networking";
+                    p60Desc.textContent = "Ingressar em um grupo de empresários local ou contratar mentoria de um profissional com mais bagagem de mercado.";
+                    p60Kpi.textContent = "Participação confirmada em ao menos 2 reuniões de mentoria/mês";
+
+                    p90Title.textContent = "Análise de Risco & Inovação";
+                    p90Desc.textContent = "Apresentar um novo produto/serviço ao mercado ou testar um novo canal de vendas com orçamento controlado.";
+                    p90Kpi.textContent = "Lançamento de 1 MVP (Produto Mínimo Viável) testado no mercado";
+                }
+            } else {
+                // SOLO MODE
+                if (lowest.key === "C") {
+                    bAlertText.textContent = "Seu menor pilar no Modo Solo é CONHECIMENTO. É essencial dominar a precificação do seu valor/hora, impostos do autônomo/MEI e clareza de proposta de valor.";
+                    p30Title.textContent = "Precificação Real & Custos Pessoais/Profissionais";
+                    p30Desc.textContent = "Calcular seu valor/hora real considerando férias, impostos e custos operacionais solo para reajustar propostas futuras.";
+                    p30Kpi.textContent = "Tabela de precificação por serviço/projeto ajustada";
+
+                    p60Title.textContent = "Gestão Fiscal & Contábil do Autônomo";
+                    p60Desc.textContent = "Revisar seu enquadramento (MEI/Simples) com contabilidade digital e separar 100% das contas bancárias (PJ x PF).";
+                    p60Kpi.textContent = "Contas bancárias 100% separadas e regularizadas";
+
+                    p90Title.textContent = "Esteira de Ofertas & Empacotamento";
+                    p90Desc.textContent = "Transformar serviços avulsos em pacotes previsíveis (recorrência ou escopo fechado) para evitar dependência do 'trabalhou/ganhou'.";
+                    p90Kpi.textContent = "Ao menos 2 contratos no modelo de receita recorrente";
+
+                } else if (lowest.key === "H") {
+                    bAlertText.textContent = "Seu menor pilar no Modo Solo é HABILIDADE. O desafio é organizar o tempo diário, automatizar processos burocráticos e prospectar sem sobrecarregar sua agenda.";
+                    p30Title.textContent = "Automação Operacional & Ferramentas IA";
+                    p30Desc.textContent = "Adotar software de agendamento automático, emissão fácil de NFs e assistentes de IA para economizar horas burocráticas.";
+                    p30Kpi.textContent = "Economia comprovada de ao menos 6 horas/semana na rotina";
+
+                    p60Title.textContent = "Organização de CRM & Prospecção Solo";
+                    p60Desc.textContent = "Implantar pipeline simples (ex: Notion ou Trello) para registrar contatos, enviar propostas no prazo e fazer follow-up ativo.";
+                    p60Kpi.textContent = "100% das propostas ativas com follow-up registrado";
+
+                    p90Title.textContent = "Revisão Contratual & Terceirização Pontual";
+                    p90Desc.textContent = "Contratar freelancers para demandas secundárias (ex: design, contabilidade) e renegociar prazos com clientes de baixa margem.";
+                    p90Kpi.textContent = "Aumento de 15% na margem média dos novos contratos";
+
+                } else {
+                    bAlertText.textContent = "Seu menor pilar no Modo Solo é ATITUDE. O foco deve ser desenvolver auto-disciplina sem supervisão, coragem para cobrar mais caro e proatividade de vendas.";
+                    p30Title.textContent = "Prospecção Ativa & Prova Social";
+                    p30Desc.textContent = "Solicitar depoimentos/avaliações em texto ou vídeo para seus últimos 10 clientes e publicar em seu portfólio/redes.";
+                    p30Kpi.textContent = "5+ depoimentos de prova social publicados no portfólio";
+
+                    p60Title.textContent = "Rede de Pares & Comunidade Autônoma";
+                    p60Desc.textContent = "Participar de comunidade de profissionais da sua área ou grupo de mastermind solo para trocar indicações e combater a 'solidão do autônomo'.";
+                    p60Kpi.textContent = "Participação em 2 encontros de networking por mês";
+
+                    p90Title.textContent = "Lançamento de Nova Oferta / Nicho Mais Rentável";
+                    p90Desc.textContent = "Testar uma abordagem comercial de valor mais elevado para clientes de maior porte ou nicho com maior poder aquisitivo.";
+                    p90Kpi.textContent = "Fechamento de pelo menos 1 cliente na nova faixa de valor";
+                }
+            }
+        }
+
+        function updateSpecificRecommendations() {
+            const container = document.getElementById('pdi-specific-recommendations');
+            if (currentMode === 'team') {
+                container.innerHTML = `
+                    <div class="p-3.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                        <span class="font-bold text-indigo-400 block mb-1">C - Foco no Saber (Empresa)</span>
+                        <p>Cursos de Gestão Financeira PME (SEBRAE/FGV), planejamento de DRE, fluxo de caixa e análise de ponto de equilíbrio.</p>
+                    </div>
+                    <div class="p-3.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                        <span class="font-bold text-emerald-400 block mb-1">H - Foco no Saber Fazer (Liderança)</span>
+                        <p>Implantar rituais 1-on-1, gestão de projetos via Trello/Asana, treinamento de delegação e simulação de negociações.</p>
+                    </div>
+                    <div class="p-3.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                        <span class="font-bold text-amber-400 block mb-1">A - Foco no Querer Fazer (Postura)</span>
+                        <p>Grupos de Mastermind empresarial, cultura de feedback sem culpas (post-mortem) e rotina de liderança inspiradora.</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="p-3.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                        <span class="font-bold text-indigo-400 block mb-1">C - Foco no Saber (Solo)</span>
+                        <p>Cálculo exato de hora/homem, tributação autônomo/MEI, precificação por valor entregue e esteira de produtos/serviços.</p>
+                    </div>
+                    <div class="p-3.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                        <span class="font-bold text-emerald-400 block mb-1">H - Foco no Saber Fazer (Produtividade)</span>
+                        <p>Automação com IA, sistemas de agendamento, gestão de tempo com técnica Pomodoro/Time-blocking e CRM de vendas solo.</p>
+                    </div>
+                    <div class="p-3.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                        <span class="font-bold text-amber-400 block mb-1">A - Foco no Querer Fazer (Mentalidade)</span>
+                        <p>Coleta constante de prova social (depoimentos), auto-disciplina sem chefes, coragem para posicionar preço alto e resiliência.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function selectArchetypeCard(key) {
+            const detailPanel = document.getElementById('archetype-detail-panel');
+            const activeSet = archetypesData[currentMode];
+            const data = activeSet[key];
+
+            ['teorico', 'executor', 'visionario', 'equilibrado'].forEach(k => {
+                const btn = document.getElementById(`arch-btn-${k}`);
+                if (k === key) {
+                    btn.classList.add('ring-2', 'ring-indigo-500', 'bg-white');
+                    btn.classList.remove('bg-slate-50/50');
+                } else {
+                    btn.classList.remove('ring-2', 'ring-indigo-500', 'bg-white');
+                    btn.classList.add('bg-slate-50/50');
+                }
+            });
+
+            detailPanel.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3 mb-3">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">${data.subtitle}</span>
+                        <h3 class="text-xl font-extrabold text-white">${data.title}</h3>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 w-fit">Modo: ${currentMode === 'team' ? 'Com Equipe' : 'Solo'}</span>
+                </div>
+                <p class="text-sm text-slate-300 leading-relaxed mb-4">${data.desc}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="p-3.5 rounded-lg bg-slate-800/90 border border-slate-700">
+                        <strong class="text-emerald-400 font-bold block mb-1">Fortalezas do Perfil:</strong>
+                        <span class="text-slate-300">${data.strengths}</span>
+                    </div>
+                    <div class="p-3.5 rounded-lg bg-slate-800/90 border border-slate-700">
+                        <strong class="text-amber-400 font-bold block mb-1">Riscos Principais:</strong>
+                        <span class="text-slate-300">${data.risks}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function initCharts() {
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            radarChartInstance = new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: [
+                        'Gestão Financeira (C)',
+                        'Visão de Mercado (C)',
+                        'Legislação & Processos (C)',
+                        'Gestão Operacional (H)',
+                        'Negociação & Vendas (H)',
+                        'Gestão do Tempo (H)',
+                        'Resiliência & Estresse (A)',
+                        'Proatividade (A)',
+                        'Visão de Dono (A)'
+                    ],
+                    datasets: [
+                        {
+                            label: 'Pontuação Atual',
+                            data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            backgroundColor: 'rgba(79, 70, 229, 0.25)',
+                            borderColor: 'rgba(79, 70, 229, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(79, 70, 229, 1)'
+                        },
+                        {
+                            label: 'Meta Consolidada (Benchmark)',
+                            data: [4, 4, 4, 4, 4, 4, 4, 4, 4],
+                            backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                            borderColor: 'rgba(16, 185, 129, 0.6)',
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 5,
+                            ticks: { stepSize: 1, display: false },
+                            pointLabels: {
+                                font: { size: 10 },
+                                color: '#475569',
+                                callback: function(value) {
+                                    return value.length > 16 ? value.substring(0, 16) + '...' : value;
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            barChartInstance = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Conhecimentos (C)', 'Habilidades (H)', 'Atitudes (A)'],
+                    datasets: [
+                        {
+                            label: 'Pontos Obtidos (máx 30)',
+                            data: [0, 0, 0],
+                            backgroundColor: [
+                                'rgba(79, 70, 229, 0.8)',
+                                'rgba(13, 148, 136, 0.8)',
+                                'rgba(217, 119, 6, 0.8)'
+                            ],
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 30,
+                            ticks: { stepSize: 5 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function updateCharts(res) {
+            if (!radarChartInstance || !barChartInstance) return;
+
+            const c1 = currentScores.C.C1 || 0;
+            const c2 = currentScores.C.C2 || 0;
+            const c3 = ((currentScores.C.C3 || 0) + (currentScores.C.C4 || 0)) / 2;
+
+            const h1 = currentScores.H.H1 || 0;
+            const h2 = currentScores.H.H2 || 0;
+            const h3 = ((currentScores.H.H5 || 0) + (currentScores.H.H6 || 0)) / 2;
+
+            const a1 = currentScores.A.A1 || 0;
+            const a2 = currentScores.A.A2 || 0;
+            const a3 = ((currentScores.A.A3 || 0) + (currentScores.A.A6 || 0)) / 2;
+
+            radarChartInstance.data.datasets[0].data = [c1, c2, c3, h1, h2, h3, a1, a2, a3];
+            radarChartInstance.update();
+
+            barChartInstance.data.datasets[0].data = [res.C, res.H, res.A];
+            barChartInstance.update();
+        }
+
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
