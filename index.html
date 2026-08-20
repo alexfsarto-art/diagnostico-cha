@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Diagnóstico CHA - Guia & Ferramentas Empresariais</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+<!-- Chosen Palette: Slate & Deep Indigo (Background: Warm Slate #F8FAFC; Header/Hero: Navy/Indigo #0F172A; Accent Gold: #D97706; Accent Emerald: #059669) -->
+<!-- Application Structure Plan: Central landing index page designed for multi-tool GitHub Pages deployments. Features: 1. Hero banner introducing the CHA Framework; 2. Direct Navigation Hub linking to specific tool pages ('comercio.html' and 'empresarial.html'); 3. Pros and Cons analysis of the CHA model with a prominent 'Notice/Disclaimer of Recreative & Educational Use'; 4. Interactive 'Which Tool Should I Choose?' questionnaire helper. -->
+<!-- Visualization & Content Choices: Clean Tailwind layout with interactive accordion/modals for usage disclaimer and pros/cons comparison. Uses pure Unicode symbols/icons to avoid SVG. Direct clean links for GitHub Pages compatibility. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Header / Navigation -->
+    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🧠</span>
+                    <div>
+                        <h1 class="font-bold text-base sm:text-lg leading-tight">Portal CHA Empresarial</h1>
+                        <p class="text-[11px] text-slate-400">Conhecimentos, Habilidades & Atitudes</p>
+                    </div>
+                </div>
+                <nav class="flex items-center space-x-2 text-xs sm:text-sm font-medium">
+                    <a href="#ferramentas" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white transition-colors font-semibold">Acessar Testes</a>
+                    <a href="#pros-contras" class="px-3 py-1.5 rounded-lg hover:bg-slate-800 text-slate-300 transition-colors">Prós & Contras</a>
+                    <a href="#aviso" class="px-3 py-1.5 rounded-lg hover:bg-slate-800 text-slate-300 transition-colors">Termos de Uso</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- Hero Section -->
+        <section class="gradient-bg text-white rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
+            <div class="max-w-3xl relative z-10 space-y-4">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    💡 Diagnóstico & Autodesenvolvimento
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+                    Avalie suas Competências com a Metodologia CHA
+                </h2>
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                    Escolha a ferramenta de avaliação ideal para o seu momento profissional. Mapeie seus pontos fortes em <strong>Conhecimentos (C)</strong>, <strong>Habilidades (H)</strong> e <strong>Atitudes (A)</strong>, identificando gargalos para criar um plano de ação prático.
+                </p>
+                <div class="pt-2 flex flex-wrap gap-3">
+                    <a href="#ferramentas" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm transition-all shadow-lg hover:shadow-amber-500/20">
+                        🚀 Escolher meu Teste
+                    </a>
+                    <a href="#aviso" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm transition-all border border-slate-700">
+                        ⚠️ Ler Aviso de Uso
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tool Selection Hub (GitHub Pages Links) -->
+        <section id="ferramentas" class="space-y-6">
+            <div class="text-center max-w-2xl mx-auto">
+                <h2 class="text-2xl font-bold text-slate-900">Selecione o Diagnóstico Ideal</h2>
+                <p class="text-slate-600 text-sm mt-1">
+                    Clique em uma das opções abaixo para ser direcionado à ferramenta correspondente:
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Card 1: Comércio e Varejo -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:border-amber-500 transition-all flex flex-col justify-between space-y-6">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-3xl">🛍️</span>
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-amber-100 text-amber-900">Para Varejo & Vendas</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900">CHA do Comércio e Varejo</h3>
+                        <p class="text-xs text-slate-500">
+                            Focado em comerciantes autônomos, sacoleiros, feirantes, e-commerce solo e lojistas estruturados com ponto comercial e equipe.
+                        </p>
+                        <ul class="text-xs text-slate-600 space-y-1.5 pt-2">
+                            <li class="flex items-center gap-2">🔹 Precificação, Margem Livre e Markup</li>
+                            <li class="flex items-center gap-2">🔹 Giro de Estoque e Compras em Atacado</li>
+                            <li class="flex items-center gap-2">🔹 Eliminação do Fiado e Controle de Caixa</li>
+                        </ul>
+                    </div>
+                    <a href="comercio.html" class="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-center text-sm transition-colors shadow-sm block">
+                        Acessar Teste do Comércio ➔
+                    </a>
+                </div>
+
+                <!-- Card 2: Empresarial Geral -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:border-indigo-500 transition-all flex flex-col justify-between space-y-6">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-3xl">🏢</span>
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-900">Para Gestores & Serviços</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900">CHA Empresarial Geral</h3>
+                        <p class="text-xs text-slate-500">
+                            Ideal para profissionais autônomos, prestadores de serviços, consultores, startups e empresários de Pequenas e Médias Empresas (PMEs).
+                        </p>
+                        <ul class="text-xs text-slate-600 space-y-1.5 pt-2">
+                            <li class="flex items-center gap-2">🔹 Gestão Estratégica, DRE e Indicadores</li>
+                            <li class="flex items-center gap-2">🔹 Delegação, Liderança e Negociação</li>
+                            <li class="flex items-center gap-2">🔹 Resiliência e Tolerância ao Risco</li>
+                        </ul>
+                    </div>
+                    <a href="empresarial.html" class="w-full py-3 rounded-xl bg-indigo-900 hover:bg-indigo-800 text-white font-bold text-center text-sm transition-colors shadow-sm block">
+                        Acessar Teste Empresarial ➔
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Interactive Recommendation Helper -->
+        <section class="bg-indigo-950 text-white rounded-2xl p-6 sm:p-8 space-y-4">
+            <div class="max-w-xl">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Dúvida na Escolha?</span>
+                <h3 class="text-xl font-bold mt-1">Qual teste devo fazer primeiro?</h3>
+                <p class="text-xs text-slate-300 mt-1">
+                    Responda à pergunta abaixo para receber nossa recomendação instantânea:
+                </p>
+            </div>
+
+            <div class="space-y-3 pt-2">
+                <label class="text-xs font-semibold block text-slate-200">Sua atividade principal envolve compra e venda direta de produtos físicos?</label>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="recommendTool('sim')" class="px-4 py-2 rounded-lg bg-indigo-800 hover:bg-indigo-700 text-xs font-semibold transition-colors border border-indigo-700">
+                        Sim (Compro/Revendo Mercadorias)
+                    </button>
+                    <button onclick="recommendTool('nao')" class="px-4 py-2 rounded-lg bg-indigo-800 hover:bg-indigo-700 text-xs font-semibold transition-colors border border-indigo-700">
+                        Não (Presto Serviços ou Outros)
+                    </button>
+                </div>
+                <div id="recommendation-result" class="hidden p-3.5 rounded-xl bg-indigo-900/90 border border-indigo-700 text-xs leading-relaxed text-amber-200 font-medium">
+                </div>
+            </div>
+        </section>
+
+        <!-- Pros & Cons Section -->
+        <section id="pros-contras" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-6">
+            <div>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800 mb-2">
+                    Análise Crítica do Método
+                </span>
+                <h2 class="text-2xl font-bold text-slate-900">Prós & Contras da Avaliação CHA</h2>
+                <p class="text-slate-600 text-sm mt-1">
+                    Entenda os pontos fortes e as limitações inerentes a este modelo de diagnóstico autoadministrado:
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Prós -->
+                <div class="p-5 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-3">
+                    <div class="flex items-center gap-2 text-emerald-800 font-bold text-base">
+                        <span>✅</span>
+                        <h3>Prós & Vantagens</h3>
+                    </div>
+                    <ul class="text-xs text-slate-700 space-y-2.5 leading-relaxed">
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold text-emerald-600">1.</span>
+                            <span><strong>Clareza Imediata:</strong> Mapeia de forma simples a diferença entre o que você <em>sabe</em>, o que <em>sabe fazer</em> e o que de fato <em>pratica</em>.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold text-emerald-600">2.</span>
+                            <span><strong>Plano Orientador (PDI):</strong> Gera sugestões práticas de ação de curto e médio prazo (30-60-90 dias) baseadas nas suas menores notas.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold text-emerald-600">3.</span>
+                            <span><strong>Visão Holística:</strong> Evita o erro comum de focar apenas na parte técnica (Conhecimento) esquecendo a execução (Habilidade) ou a mentalidade (Atitude).</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold text-emerald-600">4.</span>
+                            <span><strong>Rápido & Acessível:</strong> Pode ser preenchido em menos de 10 minutos diretamente no navegador sem necessidade de cadastros.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contras / Limitações -->
+                <div class="p-5 rounded-xl bg-rose-50/70 border border-rose-200 space-y-3">
+                    <div class="flex items-center gap-2 text-rose-800 font-bold text-base">
+                        <span>⚠️</span>
+                        <h3>Contras & Limitações</h3>
+                    </div>
+                    <ul class="text-xs text-slate-700 space-y-2.5 leading-relaxed">
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold text-rose-600">1.</span>
+                            <span><strong>Vieses de Autoavaliação:</strong> O resultado depende 100% da sua honestidade. Há tendência a superestimar habilidades ou subestimar falhas.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold text-rose-600">2.</span>
+                            <span><strong>Não Substitui Auditoria Formal:</strong> Não analisa dados financeiros reais (balanços, extratos de caixa) nem documentos contábeis da empresa.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold text-rose-600">3.</span>
+                            <span><strong>Modelo Simplificado:</strong> Utiliza notas subjetivas de 1 a 5 para quantificar atitudes comportamentais complexas.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold text-rose-600">4.</span>
+                            <span><strong>Ausência de Validação Externa:</strong> Não inclui a visão de clientes, funcionários ou sócios sobre o seu desempenho real.</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Terms of Use & Disclaimer Section -->
+        <section id="aviso" class="bg-amber-50 border border-amber-200 rounded-2xl p-6 sm:p-8 space-y-4">
+            <div class="flex items-center gap-3 text-amber-900">
+                <span class="text-2xl">📋</span>
+                <h2 class="text-lg font-bold">Aviso Importante: Caráter Recreativo, Educacional & Didático</h2>
+            </div>
+            
+            <div class="text-xs text-amber-950 leading-relaxed space-y-3">
+                <p>
+                    <strong>Atenção:</strong> As ferramentas disponibilizadas neste portal possuem finalidade <strong>exclusivamente educativa, informativa, didática e de reflexão autodiagnóstica (uso orientativo e recreativo)</strong>.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div class="bg-white/80 p-3.5 rounded-xl border border-amber-200/80">
+                        <strong class="font-bold text-slate-900 block mb-1">O que ESTE TESTE É:</strong>
+                        <p class="text-slate-700">Um instrumento prático de autoavaliação guiada para promover insights sobre prioridades de aprendizado e desenvolvimento pessoal.</p>
+                    </div>
+                    <div class="bg-white/80 p-3.5 rounded-xl border border-amber-200/80">
+                        <strong class="font-bold text-slate-900 block mb-1">O que ESTE TESTE NÃO É:</strong>
+                        <p class="text-slate-700">Não constitui consultoria financeira, jurídica, contábil, laudo psicométrico ou parecer técnico vinculante para tomadas de decisão de investimentos.</p>
+                    </div>
+                </div>
+                <p class="text-[11px] text-amber-900/80 pt-2 italic">
+                    Recomendamos consultar profissionais especializados (contadores, administradores, consultores de negócios e advogados) para qualquer tomada de decisão crítica no seu negócio.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 py-6 mt-12 text-center text-xs space-y-2">
+        <div class="max-w-6xl mx-auto px-4">
+            <p>Portal CHA Empresarial - Ferramentas de Autodesenvolvimento</p>
+            <p class="text-slate-500 text-[11px]">Hospedado via GitHub Pages | Uso livre para fins de autoconhecimento e aprendizado.</p>
+        </div>
+    </footer>
+
+    <script>
+        function recommendTool(answer) {
+            const resultBox = document.getElementById('recommendation-result');
+            resultBox.classList.remove('hidden');
+
+            if (answer === 'sim') {
+                resultBox.innerHTML = `
+                    👉 <strong>Recomendação:</strong> O teste ideal para você é o <a href="comercio.html" class="underline text-amber-400 font-bold hover:text-amber-300">CHA do Comércio & Varejo (comercio.html)</a>. Ele aborda compra de mercadorias, giro de estoque, markup, taxas de maquininhas e gestão de vitrine/loja.
+                `;
+            } else {
+                resultBox.innerHTML = `
+                    👉 <strong>Recomendação:</strong> O teste ideal para você é o <a href="empresarial.html" class="underline text-amber-400 font-bold hover:text-amber-300">CHA Empresarial Geral (empresarial.html)</a>. Ele é focado em prestação de serviços, auto-gestão, indicadores estratégicos, delegação e expansão.
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
