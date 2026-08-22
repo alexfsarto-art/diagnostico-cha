@@ -1,1095 +1,490 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avaliação CHA do Comércio - Autônomo ao Lojista Estruturado</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Diagnóstico & Avaliação CHA do Comércio e Varejo</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 580px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 320px;
-            max-height: 380px;
+        :root {
+            --primary: #065f46;
+            --primary-light: #059669;
+            --secondary: #d97706;
+            --bg: #f0fdf4;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #4b5563;
+            --border: #d1fae5;
+            --danger: #dc2626;
+            --warning: #f59e0b;
         }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-            }
-        }
-        @media print {
-            .no-print {
-                display: none !important;
-            }
-            .print-only {
-                display: block !important;
-            }
-            body {
-                background-color: #ffffff !important;
-                color: #000000 !important;
-            }
-        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        header { text-align: center; margin-bottom: 30px; padding: 20px 0; border-bottom: 2px solid #a7f3d0; }
+        h1 { color: var(--primary); font-size: 2rem; margin-bottom: 10px; }
+        .subtitle { color: var(--text-light); font-size: 1rem; }
+        
+        .mode-selector { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid var(--border); }
+        .mode-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .mode-btn { padding: 15px; border: 2px solid var(--border); border-radius: 8px; background: white; cursor: pointer; font-weight: 600; text-align: left; transition: all 0.2s; }
+        .mode-btn.active { border-color: var(--primary-light); background: #ecfdf5; color: var(--primary); }
+        .mode-btn small { display: block; font-weight: normal; color: var(--text-light); font-size: 0.85rem; margin-top: 4px; }
+
+        .card { background: var(--card-bg); border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        .section-title { color: var(--primary); font-size: 1.3rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #f0fdf4; padding-bottom: 8px; }
+        
+        .q-group { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border); }
+        .q-title { font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+        .scale-options { display: flex; justify-content: space-between; gap: 5px; }
+        .scale-btn { flex: 1; text-align: center; padding: 8px 4px; border: 1px solid var(--border); border-radius: 6px; background: #f9fafb; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
+        .scale-btn input { display: none; }
+        .scale-btn.selected { background: var(--primary-light); color: white; border-color: var(--primary-light); font-weight: bold; }
+        
+        .preset-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        .preset-btn { background: #e5e7eb; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 600; color: var(--text); }
+        .preset-btn:hover { background: #d1d5db; }
+
+        button.btn-submit { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button.btn-submit:hover { background: var(--primary-light); }
+
+        .results-container { display: none; }
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        @media (max-width: 768px) { .charts-grid, .mode-options { grid-template-columns: 1fr; } }
+
+        .profile-badge { display: inline-block; padding: 6px 12px; background: #d1fae5; color: var(--primary); font-weight: bold; border-radius: 20px; font-size: 0.9rem; margin-bottom: 10px; }
+        .pdi-timeline { border-left: 3px solid var(--primary-light); padding-left: 20px; margin-top: 15px; }
+        .pdi-item { margin-bottom: 20px; position: relative; }
+        .pdi-item::before { content: ''; position: absolute; left: -26px; top: 5px; width: 10px; height: 10px; background: var(--primary-light); border-radius: 50%; }
+        .pdi-item h4 { color: var(--primary); margin-bottom: 5px; }
+        .kpi-badge { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; display: inline-block; margin-top: 5px; font-weight: 600; }
+        
+        .risk-box { background: #fef2f2; border-left: 4px solid var(--danger); padding: 15px; border-radius: 0 8px 8px 0; margin-top: 15px; }
+        .risk-box h4 { color: #991b1b; margin-bottom: 5px; font-size: 0.95rem; }
+        .risk-box p { color: #7f1d1d; font-size: 0.9rem; }
+
+        .nav-link { display: inline-block; margin-bottom: 15px; color: var(--primary-light); text-decoration: none; font-weight: 600; }
+        .nav-link:hover { text-decoration: underline; }
     </style>
 </head>
-<body class="bg-[#FAF9F5] text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+<body>
 
-<!-- Chosen Palette: Warm Commercial Harmony (Background: Warm Warm White #FAF9F5; Primary: Indigo/Navy #1E1B4B; Commerce Accents: Amber Gold #D97706, Emerald Green #059669, Rose Red #E11D48) -->
-<!-- Application Structure Plan: Designed a retail-focused 5-stage interactive assessment suite tailored specifically for Merchants & Retailers: 1. Dual-Mode Switcher (Solo/Autônomo comerciante vs. Lojista Estruturado/Formal); 2. Commerce Archetypes Explorer tailored to retail bottlenecks (e.g. O Vendedor sem Margem, O Estoque Empacado, O Comprador Impulsivo, O Lojista de Alta Performance); 3. Interactive 18-Question Retail CHA Test with real-time score updates, presets, and category subtotals; 4. Dynamic Diagnostic Dashboard with Chart.js Canvas Radar and Bar charts; 5. Retail-Specific Action Plan (PDI 30-60-90 days) focused on stock turnover, markup/CMV, sales scripts, cash flow, and team management. -->
-<!-- Visualization & Content Choices: Quantitative score data mapped to Chart.js Radar Chart (compares C, H, A vs retail benchmark) and Bar Chart (pillar breakdown) using Canvas. Qualitative recommendations dynamically switch between solo merchant dynamics (feira, sacoleiro, e-commerce solo, MEI) and structured retail store operations (equipe, caixa, estoque, ICMS/Simples, merchandising). No SVG or Mermaid JS used. -->
-<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-
-    <header class="bg-indigo-950 text-white border-b border-indigo-900 sticky top-0 z-50 shadow-md no-print">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl">🛍️</span>
-                    <div>
-                        <h1 class="font-bold text-lg leading-tight">CHA do Comércio & Varejo</h1>
-                        <p class="text-xs text-indigo-300">Do Comerciante Autônomo ao Lojista Estruturado</p>
-                    </div>
-                </div>
-                <nav class="hidden md:flex space-x-1 lg:space-x-2 text-sm font-medium">
-                    <a href="#overview" class="px-3 py-2 rounded-lg hover:bg-indigo-900 transition-colors">Visão Geral</a>
-                    <a href="#archetypes" class="px-3 py-2 rounded-lg hover:bg-indigo-900 transition-colors">Perfis Comerciais</a>
-                    <a href="#assessment" class="px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white transition-colors">Iniciar Avaliação</a>
-                    <a href="#dashboard" class="px-3 py-2 rounded-lg hover:bg-indigo-900 transition-colors">Resultados</a>
-                    <a href="#action-plan" class="px-3 py-2 rounded-lg hover:bg-indigo-900 transition-colors">Plano PDI</a>
-                </nav>
-            </div>
-        </div>
+<div class="container">
+    <a href="index.html" class="nav-link">← Voltar ao Portal Principal</a>
+    <header>
+        <h1>Diagnóstico & Avaliação CHA do Comércio</h1>
+        <p class="subtitle">Avaliação especializada para Comerciantes Solo, Varejistas e Lojistas Estruturados</p>
     </header>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
-
-        <section id="overview" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80">
-            <div class="max-w-4xl">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 mb-3">
-                    Metodologia CHA Aplicada ao Comércio, Varejo & E-commerce
-                </span>
-                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-4">
-                    Diagnóstico Estratégico para Comerciantes & Lojistas
-                </h2>
-                <p class="text-slate-600 text-base leading-relaxed mb-6">
-                    Seja você um <strong>comerciante individual / autônomo</strong> (sacoleiro, feirante, revendedor, barraqueiro, vendedor em redes sociais, MEI sem equipe) ou um <strong>lojista formal estruturado</strong> (loja física de rua/shopping, equipe de vendas, caixa e gestão de estoque em regime Simples/Lucro Presumido), esta ferramenta identifica exatamente onde estão seus gargalos de margem, giro de estoque, compras, vendas e gestão financeira.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                <div class="p-5 rounded-xl bg-indigo-50/70 border border-indigo-100">
-                    <div class="flex items-center gap-3 mb-2">
-                        <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">C</span>
-                        <h3 class="font-bold text-slate-900">Conhecimentos</h3>
-                    </div>
-                    <p class="text-xs font-semibold text-indigo-800 mb-1">"Saber o Negócio"</p>
-                    <p class="text-sm text-slate-600">Precificação com markup real, margem de contribuição, impostos/taxas de maquininha, curva ABC de estoque e análise de concorrência.</p>
-                </div>
-
-                <div class="p-5 rounded-xl bg-emerald-50/70 border border-emerald-100">
-                    <div class="flex items-center gap-3 mb-2">
-                        <span class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">H</span>
-                        <h3 class="font-bold text-slate-900">Habilidades</h3>
-                    </div>
-                    <p class="text-xs font-semibold text-emerald-800 mb-1">"Saber Vender & Operar"</p>
-                    <p class="text-sm text-slate-600">Técnicas de negociação com fornecedores, controle rigoroso do caixa, atendimento ao cliente, merchandising e motivação da equipe ou auto-gestão.</p>
-                </div>
-
-                <div class="p-5 rounded-xl bg-amber-50/70 border border-amber-100">
-                    <div class="flex items-center gap-3 mb-2">
-                        <span class="w-8 h-8 rounded-lg bg-amber-600 text-white flex items-center justify-center font-bold text-sm">A</span>
-                        <h3 class="font-bold text-slate-900">Atitudes</h3>
-                    </div>
-                    <p class="text-xs font-semibold text-amber-800 mb-1">"Querer Fazer Crescer"</p>
-                    <p class="text-sm text-slate-600">Proatividade para buscar novos clientes, resiliência na baixa de vendas, separação entre bolso pessoal e da loja, e garra comercial.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="archetypes" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-900 mb-2">
-                        Matriz Comportamental do Varejo
-                    </span>
-                    <h2 class="text-2xl font-bold text-slate-900">Perfis Predominantes no Comércio</h2>
-                    <p class="text-slate-600 text-sm mt-1">
-                        Clique nos cards para entender as armadilhas comuns no comércio (estoque empacado, venda sem lucro, fiado e falta de gestão).
-                    </p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <button onclick="selectArchetypeCard('vendedor_sem_margem')" id="arch-btn-vendedor_sem_margem" class="text-left p-5 rounded-xl border-2 border-slate-200 hover:border-indigo-500 transition-all bg-slate-50/50">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-rose-600">Perfil 1</span>
-                        <span class="text-lg">🏷️</span>
-                    </div>
-                    <h3 class="font-bold text-slate-900 mb-1">Vendedor sem Margem</h3>
-                    <p class="text-xs text-slate-500">Vende Muito | Não Vê a Cor do Dinheiro</p>
-                </button>
-
-                <button onclick="selectArchetypeCard('estoque_parado')" id="arch-btn-estoque_parado" class="text-left p-5 rounded-xl border-2 border-slate-200 hover:border-emerald-500 transition-all bg-slate-50/50">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Perfil 2</span>
-                        <span class="text-lg">📦</span>
-                    </div>
-                    <h3 class="font-bold text-slate-900 mb-1">Comprador Impulsivo</h3>
-                    <p class="text-xs text-slate-500">Estoque Empacado | Capital Travado</p>
-                </button>
-
-                <button onclick="selectArchetypeCard('atendente_passivo')" id="arch-btn-atendente_passivo" class="text-left p-5 rounded-xl border-2 border-slate-200 hover:border-amber-500 transition-all bg-slate-50/50">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Perfil 3</span>
-                        <span class="text-lg">🏬</span>
-                    </div>
-                    <h3 class="font-bold text-slate-900 mb-1">Atendente de Balcão</h3>
-                    <p class="text-xs text-slate-500">Conhece o Produto | Falta Proatividade/Venda</p>
-                </button>
-
-                <button onclick="selectArchetypeCard('lojista_alta_performance')" id="arch-btn-lojista_alta_performance" class="text-left p-5 rounded-xl border-2 border-slate-200 hover:border-teal-500 transition-all bg-slate-50/50">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Perfil 4</span>
-                        <span class="text-lg">🏆</span>
-                    </div>
-                    <h3 class="font-bold text-slate-900 mb-1">Lojista Campeão</h3>
-                    <p class="text-xs text-slate-500">Giro Rápido | Margem Saudável | Gestão</p>
-                </button>
-            </div>
-
-            <div id="archetype-detail-panel" class="p-6 rounded-xl bg-indigo-950 text-white mt-4 transition-all">
-            </div>
-        </section>
-
-        <section id="assessment" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-6">
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-slate-100 pb-6">
-                <div>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 mb-2">
-                        Questionário Específico do Varejo
-                    </span>
-                    <h2 class="text-2xl font-bold text-slate-900">Teste de Autoavaliação CHA do Comércio</h2>
-                    <p class="text-slate-600 text-sm mt-1">
-                        Escolha seu perfil operacional abaixo. Responda atribuindo notas de <strong>1 a 5</strong> para refletir seu momento atual.
-                    </p>
-                </div>
-
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-100 p-2.5 rounded-xl no-print border border-slate-200">
-                    <span class="text-xs font-bold text-slate-700 px-2">Regime / Estrutura Comercial:</span>
-                    <div class="inline-flex rounded-lg bg-white p-1 shadow-sm border border-slate-200">
-                        <button onclick="setRetailMode('solo_comercio')" id="mode-btn-solo" class="px-3.5 py-1.5 text-xs font-bold rounded-md transition-all bg-indigo-600 text-white shadow-sm">
-                            🛍️ Comerciante Solo / Autônomo
-                        </button>
-                        <button onclick="setRetailMode('lojista_formal')" id="mode-btn-formal" class="px-3.5 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition-all">
-                            🏪 Lojista Estruturado / Formal
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200/60 no-print text-xs">
-                <div class="flex items-center gap-2 flex-wrap">
-                    <span class="font-semibold text-slate-500">Cenários Prontos:</span>
-                    <button onclick="loadRetailPreset('vendedor_sem_margem')" class="px-2.5 py-1 rounded bg-white hover:bg-rose-50 hover:text-rose-700 border border-slate-200 transition-colors">Sem Margem</button>
-                    <button onclick="loadRetailPreset('estoque_parado')" class="px-2.5 py-1 rounded bg-white hover:bg-amber-50 hover:text-amber-700 border border-slate-200 transition-colors">Estoque Parado</button>
-                    <button onclick="loadRetailPreset('atendente_passivo')" class="px-2.5 py-1 rounded bg-white hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 transition-colors">Atendente Passivo</button>
-                    <button onclick="loadRetailPreset('lojista_alta_performance')" class="px-2.5 py-1 rounded bg-white hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 transition-colors">Lojista Campeão</button>
-                </div>
-                <button onclick="resetAssessment()" class="px-3 py-1 font-medium text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors">
-                    🔄 Limpar
-                </button>
-            </div>
-
-            <div class="bg-indigo-950 text-white rounded-xl p-4 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
-                <div class="flex items-center gap-2 font-medium">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span id="progress-text" class="font-bold text-white">0 / 18</span> respondidas
-                </div>
-                <div class="w-full sm:w-48 bg-indigo-900 rounded-full h-2.5 overflow-hidden border border-indigo-700/50">
-                    <div id="progress-bar" class="bg-emerald-400 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
-                </div>
-                <div class="flex items-center gap-4 text-xs font-bold">
-                    <span class="text-indigo-200">C: <span id="quick-c" class="text-white">0</span>/30</span>
-                    <span class="text-emerald-200">H: <span id="quick-h" class="text-white">0</span>/30</span>
-                    <span class="text-amber-200">A: <span id="quick-a" class="text-white">0</span>/30</span>
-                </div>
-            </div>
-
-            <form id="cha-form" onsubmit="event.preventDefault();" class="space-y-8">
-                
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between bg-indigo-50/80 p-3.5 rounded-xl border border-indigo-100">
-                        <div class="flex items-center gap-2">
-                            <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">C</span>
-                            <h3 class="font-bold text-slate-900 text-base">Pilar 1: CONHECIMENTOS COMERCIAIS ("Saber do Negócio")</h3>
-                        </div>
-                        <span class="text-xs font-bold text-indigo-800 bg-white px-2.5 py-1 rounded-md border border-indigo-200 shadow-sm">
-                            Subtotal: <span id="subtotal-c">0</span> / 30
-                        </span>
-                    </div>
-
-                    <div id="group-c" class="space-y-4 divide-y divide-slate-100">
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-100">
-                        <div class="flex items-center gap-2">
-                            <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">H</span>
-                            <h3 class="font-bold text-slate-900 text-base">Pilar 2: HABILIDADES DE VENDAS & OPERAÇÃO ("Saber Fazer")</h3>
-                        </div>
-                        <span class="text-xs font-bold text-emerald-800 bg-white px-2.5 py-1 rounded-md border border-emerald-200 shadow-sm">
-                            Subtotal: <span id="subtotal-h">0</span> / 30
-                        </span>
-                    </div>
-
-                    <div id="group-h" class="space-y-4 divide-y divide-slate-100">
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between bg-amber-50/80 p-3.5 rounded-xl border border-amber-100">
-                        <div class="flex items-center gap-2">
-                            <span class="w-7 h-7 rounded-lg bg-amber-600 text-white flex items-center justify-center font-bold text-xs">A</span>
-                            <h3 class="font-bold text-slate-900 text-base">Pilar 3: ATITUDES & VISÃO COMERCIAL ("Querer Fazer")</h3>
-                        </div>
-                        <span class="text-xs font-bold text-amber-800 bg-white px-2.5 py-1 rounded-md border border-amber-200 shadow-sm">
-                            Subtotal: <span id="subtotal-a">0</span> / 30
-                        </span>
-                    </div>
-
-                    <div id="group-a" class="space-y-4 divide-y divide-slate-100">
-                    </div>
-                </div>
-
-            </form>
-        </section>
-
-        <section id="dashboard" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-8">
-            <div>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 mb-2">
-                    Painel do Comerciante
-                </span>
-                <h2 class="text-2xl font-bold text-slate-900">Resultados Diagnósticos & Mapeamento</h2>
-                <p class="text-slate-600 text-sm mt-1">
-                    Análise do equilíbrio comercial entre Precificação, Vendas, Giro de Estoque e Postura de Mercado.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="p-5 rounded-xl bg-indigo-950 text-white flex flex-col justify-between">
-                    <span class="text-xs text-indigo-300 font-medium">Pontuação Comercial Total</span>
-                    <div class="my-2">
-                        <span id="score-total" class="text-3xl font-extrabold">0</span>
-                        <span class="text-indigo-400 text-sm"> / 90</span>
-                    </div>
-                    <span id="maturity-badge" class="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-indigo-900 text-indigo-200 w-fit">
-                        Pendente
-                    </span>
-                </div>
-
-                <div class="p-5 rounded-xl bg-indigo-50 border border-indigo-100 flex flex-col justify-between">
-                    <span class="text-xs text-indigo-700 font-semibold uppercase tracking-wider">Conhecimento (C)</span>
-                    <div class="my-2">
-                        <span id="score-c" class="text-3xl font-extrabold text-indigo-900">0</span>
-                        <span class="text-indigo-400 text-sm"> / 30</span>
-                    </div>
-                    <span id="level-c" class="text-xs font-medium text-indigo-800">Média: 0.0</span>
-                </div>
-
-                <div class="p-5 rounded-xl bg-emerald-50 border border-emerald-100 flex flex-col justify-between">
-                    <span class="text-xs text-emerald-700 font-semibold uppercase tracking-wider">Habilidade (H)</span>
-                    <div class="my-2">
-                        <span id="score-h" class="text-3xl font-extrabold text-emerald-900">0</span>
-                        <span class="text-emerald-400 text-sm"> / 30</span>
-                    </div>
-                    <span id="level-h" class="text-xs font-medium text-emerald-800">Média: 0.0</span>
-                </div>
-
-                <div class="p-5 rounded-xl bg-amber-50 border border-amber-100 flex flex-col justify-between">
-                    <span class="text-xs text-amber-700 font-semibold uppercase tracking-wider">Atitude (A)</span>
-                    <div class="my-2">
-                        <span id="score-a" class="text-3xl font-extrabold text-amber-900">0</span>
-                        <span class="text-amber-400 text-sm"> / 30</span>
-                    </div>
-                    <span id="level-a" class="text-xs font-medium text-amber-800">Média: 0.0</span>
-                </div>
-            </div>
-
-            <div id="dominant-profile-box" class="p-6 rounded-2xl bg-indigo-950 text-white space-y-3">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Perfil Dominante Identificado</span>
-                    <span id="profile-tag" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-800/80 border border-indigo-700 text-indigo-200">Aguardando respostas</span>
-                </div>
-                <h3 id="profile-title" class="text-2xl font-extrabold">Aguardando Preenchimento do Teste</h3>
-                <p id="profile-desc" class="text-slate-200 text-sm leading-relaxed">
-                    Responda às questões acima para visualizar seu diagnóstico comportamental e empresarial completo.
-                </p>
-                <div id="profile-highlights" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-indigo-900 text-xs">
-                    <div>
-                        <span class="font-bold text-emerald-400">Fortalezas do Seu Comércio:</span>
-                        <p id="profile-strengths" class="text-slate-300 mt-1">-</p>
-                    </div>
-                    <div>
-                        <span class="font-bold text-rose-400">Gargalos e Riscos Comerciais:</span>
-                        <p id="profile-risks" class="text-slate-300 mt-1">-</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center pt-4">
-                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/80">
-                    <h3 class="text-base font-bold text-slate-900 mb-1 text-center">Teia de Competências Comerciais</h3>
-                    <p class="text-xs text-slate-500 mb-4 text-center">Comparação com o benchmark de alta performance no varejo</p>
-                    <div class="chart-container">
-                        <canvas id="radarChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/80">
-                    <h3 class="text-base font-bold text-slate-900 mb-1 text-center">Pontuação por Pilar do CHA</h3>
-                    <p class="text-xs text-slate-500 mb-4 text-center">Distribuição absoluta de pontos no comércio</p>
-                    <div class="chart-container">
-                        <canvas id="barChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="action-plan" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
-                <div>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 mb-2">
-                        Plano Comercial (PDI 30-60-90 dias)
-                    </span>
-                    <h2 class="text-2xl font-bold text-slate-900">Plano de Ação para Alavancar Vendas & Margem</h2>
-                    <p class="text-slate-600 text-sm mt-1">
-                        Ações estratégicas ajustadas automaticamente para <strong id="pdi-mode-label" class="text-indigo-600">Comerciante Solo / Autônomo</strong>.
-                    </p>
-                </div>
-
-                <button onclick="window.print()" class="no-print inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-950 text-white font-medium text-sm hover:bg-indigo-900 transition-colors">
-                    <span>🖨️</span> Imprimir Relatório Comercial
-                </button>
-            </div>
-
-            <div id="bottleneck-alert" class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm flex items-start gap-3">
-                <span class="text-xl">📢</span>
-                <div>
-                    <strong class="font-bold">Prioridade Imediata do Negócio:</strong>
-                    <span id="bottleneck-text">Preencha ao menos 6 perguntas para diagnosticar a prioridade comercial.</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-100 text-indigo-800">30 Dias</span>
-                            <span class="text-xs text-slate-500 font-medium">Caixa & Curto Prazo</span>
-                        </div>
-                        <h3 class="font-bold text-slate-900 mb-2" id="pdi-30-title">Estancar Sangria Financeira</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed mb-4" id="pdi-30-desc">
-                            Ações para recuperar margem, eliminar fiado/inadimplência e desovar estoque parado.
-                        </p>
-                    </div>
-                    <div class="pt-3 border-t border-slate-200/80">
-                        <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Meta / Indicador</span>
-                        <p class="text-xs font-medium text-slate-800 mt-0.5" id="pdi-30-kpi">-</p>
-                    </div>
-                </div>
-
-                <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-100 text-emerald-800">60 Dias</span>
-                            <span class="text-xs text-slate-500 font-medium">Estoque & Processos</span>
-                        </div>
-                        <h3 class="font-bold text-slate-900 mb-2" id="pdi-60-title">Giro de Estoque & Compras</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed mb-4" id="pdi-60-desc">
-                            Ações para negociar com atacado/fornecedores e organizar fluxo de reposição.
-                        </p>
-                    </div>
-                    <div class="pt-3 border-t border-slate-200/80">
-                        <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Meta / Indicador</span>
-                        <p class="text-xs font-medium text-slate-800 mt-0.5" id="pdi-60-kpi">-</p>
-                    </div>
-                </div>
-
-                <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-100 text-amber-800">90 Dias</span>
-                            <span class="text-xs text-slate-500 font-medium">Expansão & Vendas</span>
-                        </div>
-                        <h3 class="font-bold text-slate-900 mb-2" id="pdi-90-title">Aumento de Ticket Médio</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed mb-4" id="pdi-90-desc">
-                            Estratégias de fidelização, novos canais digitais e expansão do mix de produtos.
-                        </p>
-                    </div>
-                    <div class="pt-3 border-t border-slate-200/80">
-                        <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Meta / Indicador</span>
-                        <p class="text-xs font-medium text-slate-800 mt-0.5" id="pdi-90-kpi">-</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-8 p-6 rounded-xl bg-indigo-950 text-white space-y-4">
-                <h3 class="font-bold text-base">Boas Práticas Recomendadas para Seu Perfil Comercial</h3>
-                <div id="pdi-specific-recommendations" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="bg-indigo-950 text-slate-400 border-t border-indigo-900 py-6 mt-12 no-print">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs space-y-2">
-            <p>Instrumento de Avaliação Diagnóstica CHA - Mapeamento para Comerciantes e Lojistas</p>
-            <p class="text-slate-500">Desenvolvido para atender desde comerciantes autônomos/informais/MEIs até lojistas formais com equipe e Ponto Comercial.</p>
+    <div class="mode-selector">
+        <h3>1. Escolha a Modalidade do seu Comércio:</h3>
+        <div class="mode-options">
+            <button class="mode-btn active" onclick="setMode('formal')" id="btn-formal">
+                🏪 Lojista Estruturado / Loja Física
+                <small>Possui loja física/online com equipe, estoque estruturado ou ponto comercial.</small>
+            </button>
+            <button class="mode-btn" onclick="setMode('autonomo')" id="btn-autonomo">
+                🛍️ Comerciante Solo / Autônomo
+                <small>Revendedor, sacoleiro, feirante, e-commerce solo ou vendas diretas sem equipe.</small>
+            </button>
         </div>
-    </footer>
-
-    <script>
-        let currentMode = 'solo_comercio'; // 'solo_comercio' or 'lojista_formal'
-
-        const retailQuestions = {
-            solo_comercio: {
-                C: [
-                    { id: "C1", text: "Calculo o Preço de Venda considerando o custo de aquisição, frete, impostos/MEI e todas as taxas das maquininhas de cartão/pix de forma precisa." },
-                    { id: "C2", text: "Conheço exatamente qual é o meu produto 'carro-chefe' (maior margem e maior giro) e sei a diferença entre Markup e Margem de Lucro." },
-                    { id: "C3", text: "Entendo o limite de faturamento do MEI/Autônomo e conheço as regras básicas de formalização e notas fiscais para não ter surpresas com impostos." },
-                    { id: "C4", text: "Sei como funciona o Capital de Giro e mantenho o cálculo de quanto dinheiro preciso ter parado para repor o estoque da próxima semana/mês." },
-                    { id: "C5", text: "Sei qual é o meu Ticket Médio (quanto cada cliente gasta em média por compra) e acompanho o faturamento diário." },
-                    { id: "C6", text: "Acompanho fornecedores no atacado, feiras de abastecimento e tendências das redes sociais para antecipar produtos com alta procura." }
-                ],
-                H: [
-                    { id: "H1", text: "Consigo negociar desconto por quantidade ou prazos de pagamento mais longos direto com fornecedores/atacadistas." },
-                    { id: "H2", text: "Controlo rigorosamente o fiado/caderneta ou prefiro vender 100% no cartão/pix/dinheiro para zerar a inadimplência." },
-                    { id: "H3", text: "Utilizo o WhatsApp Business, Instagram ou catálogo digital para divulgar produtos, responder rápido e fechar vendas no mesmo dia." },
-                    { id: "H4", text: "Faço ofertas combinadas (kits ou leve 2 pague menos) para queimar produtos empacados e recuperar o dinheiro parado em estoque." },
-                    { id: "H5", text: "Mantenho o dinheiro da 'Loja/Mercadoria' 100% separado do dinheiro da minha conta pessoal/família." },
-                    { id: "H6", text: "Organizo o espaço de exposição física ou fotos do produto de forma limpa e atraente que valoriza o produto e estimula a compra." }
-                ],
-                A: [
-                    { id: "A1", text: "Mantenho o otimismo e busco saídas criativas (promoções relâmpago, vendas de porta em porta) quando as vendas caem." },
-                    { id: "A2", text: "Não espero o cliente vir até mim: busco proativamente novas listas de contatos, divulgo em grupos e peço indicações." },
-                    { id: "A3", text: "Tenho postura rigorosa no cumprimento de prazos de entrega e atendimento, honrando o que prometi ao cliente." },
-                    { id: "A4", text: "Reinvisto parte relevante do lucro líquido na compra de mais mercadorias em vez de gastar tudo com consumo pessoal." },
-                    { id: "A5", text: "Peço feedback dos clientes sobre a qualidade do produto e escuto críticas sem reagir negativamente." },
-                    { id: "A6", text: "Tenho disciplina de abrir o canal de vendas/bancada no horário certo diariamente e manter consistência de postagens." }
-                ]
-            },
-            lojista_formal: {
-                C: [
-                    { id: "C1", text: "Domino a estrutura de DRE Comercial (Faturamento Bruto, Impostos/Simples, CMV - Custo da Mercadoria Vendida, Margem de Contribuição e Lucro Líquido)." },
-                    { id: "C2", text: "Sei classificar meu estoque em Curva ABC (produtos de alto giro, média margem e baixa saída) para não travar o caixa." },
-                    { id: "C3", text: "Entendo o regime tributário da loja (Simples Nacional, ICMS, Substituição Tributária e emissão de NFC-e/NFe)." },
-                    { id: "C4", text: "Sei calcular o Ponto de Equilíbrio da loja (quanto a loja precisa faturar por dia para pagar aluguel, equipe, luz e custos fixos)." },
-                    { id: "C5", text: "Acompanho indicadores chave do varejo: Taxa de Conversão de Clientes na Loja, Ticket Médio e PA (Peças por Atendimento)." },
-                    { id: "C6", text: "Acompanho feiras do setor, novos distribuidores e inovações em Visual Merchandising (layout e exposição de vitrine)." }
-                ],
-                H: [
-                    { id: "H1", text: "Treino e acompanho a equipe de vendas diariamente com metas claras, scripts de abordagem, oferta cruzada e comissionamento." },
-                    { id: "H2", text: "Consigo renegociar contratos de aluguel comercial, taxas de maquininhas de cartão e prazos com indústrias/distribuidores." },
-                    { id: "H3", text: "Utilizo um sistema ERP/Caixa confiável para controle automatizado de estoque, entradas, saídas e prevenção de perdas." },
-                    { id: "H4", text: "Organizo o layout da loja e a vitrine estrategicamente para criar fluxo de pessoas e aumentar compras por impulso." },
-                    { id: "H5", text: "Tenho rotina diária de fechamento de caixa, conciliação de cartões e auditoria de estoque contra furtos e desvios." },
-                    { id: "H6", text: "Resolvo reclamações de clientes de forma rápida respeitando o Código de Defesa do Consumidor e retendo a fidelidade." }
-                ],
-                A: [
-                    { id: "A1", text: "Mantenho a calma e a liderança ativa em meses fracos do varejo, criando campanhas comemorativas para movimentar o salão de vendas." },
-                    { id: "A2", text: "Tenho postura de liderança pelo exemplo na loja, motivando os vendedores e mantendo a energia de vendas alta." },
-                    { id: "A3", text: "Assumo a responsabilidade pelos resultados do mês sem culpar exclusivamente o tempo, o governo ou a concorrência." },
-                    { id: "A4", text: "Aceito testar novos canais de venda (como e-commerce, sacolas de entrega rápida e redes sociais) para complementar a loja física." },
-                    { id: "A5", text: "Pesquiso a satisfação dos clientes e analiso motivos de perda de vendas na loja para ajustar o atendimento." },
-                    { id: "A6", text: "Mantenho rigor absoluto com a ética comercial, pagamento de impostos, salários em dia e organização visual da loja." }
-                ]
-            }
-        };
-
-        const archetypesData = {
-            vendedor_sem_margem: {
-                title: "O Vendedor sem Margem",
-                subtitle: "Vende muito, mas não vê a cor do dinheiro",
-                desc: "Você tem ótima lábia e vende bastante, mas erra ao precificar: concede descontos excessivos, esquece de embutir taxas de cartão, frete e impostos. No final do mês, o caixa fica zerado ou negativo mesmo com vendas altas.",
-                strengths: "Facilidade para conectar com clientes, simpatia, ritmo acelerado de vendas e alto volume de mercadorias movimentadas.",
-                risks: "Trabalhar de graça para pagar fornecedor e maquininha, ilusão do faturamento bruto e risco iminente de insolvência."
-            },
-            estoque_parado: {
-                title: "O Comprador Impulsivo (Estoque Empacado)",
-                subtitle: "Gosta de comprar novidades, mas trava o caixa",
-                desc: "Você se empolga com lançamentos e promoções de atacadistas, mas compra em excesso sem analisar a demanda real. O dinheiro fica todo preso em mercadorias prateleira e faltam recursos para pagar as contas básicas.",
-                strengths: "Bom gosto para escolher produtos, entusiasmo por novidades e bom relacionamento com fornecedores.",
-                risks: "Obsolescência de estoque, perda de valor de mercado das peças parado e falta de liquidez imediata no caixa."
-            },
-            atendente_passivo: {
-                title: "O Atendente de Balcão",
-                subtitle: "Domina o produto, mas espera o cliente pedir",
-                desc: "Você entende tudo do produto e é atencioso, mas não faz prospecção ativa, não oferece itens adicionais (upsell/cross-sell) e não utiliza redes sociais ou WhatsApp para atrair novas vendas.",
-                strengths: "Atendimento educado, honestidade, profundo conhecimento técnico dos itens que vende.",
-                risks: "Dependência exclusiva do fluxo espontâneo de pessoas e vulnerabilidade extrema à abertura de concorrentes."
-            },
-            lojista_alta_performance: {
-                title: "O Lojista Campeão / Comerciante Estratégico",
-                subtitle: "Giro rápido, margem preservada e gestão em dia",
-                desc: "Você combina compras inteligentes com precificação correta, equipe treinada (ou auto-disciplina afiada), divulgação constante e controle diário de caixa e estoque.",
-                strengths: "Alta rotatividade de estoque, excelente saúde financeira, cliente fiel e capacidade de expansão do negócio.",
-                risks: "Necessidade de manter inovação constante e cuidado para não estagnar na zona de conforto comercial."
-            }
-        };
-
-        const presetsRetail = {
-            vendedor_sem_margem: { C1:1, C2:2, C3:2, C4:1, C5:3, C6:3, H1:2, H2:1, H3:4, H4:4, H5:1, H6:3, A1:4, A2:4, A3:3, A4:2, A5:3, A6:4 },
-            estoque_parado: { C1:3, C2:1, C3:2, C4:1, C5:2, C6:5, H1:3, H2:2, H3:3, H4:1, H5:2, H6:4, A1:3, A2:3, A3:3, A4:1, A5:2, A6:3 },
-            atendente_passivo: { C1:4, C2:4, C3:3, C4:3, C5:2, C6:3, H1:2, H2:3, H3:1, H4:1, H5:4, H6:4, A1:2, A2:1, A3:4, A4:3, A5:3, A6:4 },
-            lojista_alta_performance: { C1:5, C2:5, C3:4, C4:5, C5:5, C6:4, H1:5, H2:4, H3:5, H4:5, H5:5, H6:5, A1:5, A2:5, A3:5, A4:5, A5:4, A6:5 }
-        };
-
-        let currentScores = { C: {}, H: {}, A: {} };
-        let radarChartInstance = null;
-        let barChartInstance = null;
-
-        function initApp() {
-            renderQuestions();
-            selectArchetypeCard('lojista_alta_performance');
-            initCharts();
-            updateAll();
-        }
-
-        function setRetailMode(mode) {
-            currentMode = mode;
-            const btnSolo = document.getElementById('mode-btn-solo');
-            const btnFormal = document.getElementById('mode-btn-formal');
-            const labelPdi = document.getElementById('pdi-mode-label');
-
-            if (mode === 'solo_comercio') {
-                btnSolo.className = "px-3.5 py-1.5 text-xs font-bold rounded-md transition-all bg-indigo-600 text-white shadow-sm";
-                btnFormal.className = "px-3.5 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition-all";
-                labelPdi.textContent = "Comerciante Solo / Autônomo";
-            } else {
-                btnFormal.className = "px-3.5 py-1.5 text-xs font-bold rounded-md transition-all bg-indigo-600 text-white shadow-sm";
-                btnSolo.className = "px-3.5 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition-all";
-                labelPdi.textContent = "Lojista Estruturado / Formal";
-            }
-
-            renderQuestions();
-            
-            // Reapply stored scores
-            Object.keys(currentScores.C).forEach(qId => {
-                const val = currentScores.C[qId];
-                const input = document.querySelector(`input[name="${qId}"][value="${val}"]`);
-                if (input) input.checked = true;
-            });
-            Object.keys(currentScores.H).forEach(qId => {
-                const val = currentScores.H[qId];
-                const input = document.querySelector(`input[name="${qId}"][value="${val}"]`);
-                if (input) input.checked = true;
-            });
-            Object.keys(currentScores.A).forEach(qId => {
-                const val = currentScores.A[qId];
-                const input = document.querySelector(`input[name="${qId}"][value="${val}"]`);
-                if (input) input.checked = true;
-            });
-
-            selectArchetypeCard('lojista_alta_performance');
-            updateAll();
-        }
-
-        function renderQuestions() {
-            const categories = [
-                { key: 'C', containerId: 'group-c', colorClass: 'indigo' },
-                { key: 'H', containerId: 'group-h', colorClass: 'emerald' },
-                { key: 'A', containerId: 'group-a', colorClass: 'amber' }
-            ];
-
-            const activeQuestions = retailQuestions[currentMode];
-
-            categories.forEach(cat => {
-                const container = document.getElementById(cat.containerId);
-                container.innerHTML = '';
-
-                activeQuestions[cat.key].forEach(q => {
-                    const qDiv = document.createElement('div');
-                    qDiv.className = 'pt-4 pb-2 flex flex-col md:flex-row md:items-center justify-between gap-4';
-                    
-                    qDiv.innerHTML = `
-                        <div class="flex items-start gap-3 max-w-xl">
-                            <span class="font-bold text-xs px-2 py-1 bg-slate-100 rounded text-slate-700 border border-slate-200 mt-0.5">${q.id}</span>
-                            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">${q.text}</p>
-                        </div>
-                        <div class="flex items-center gap-1.5 sm:gap-2 self-start md:self-center">
-                            ${[1, 2, 3, 4, 5].map(val => `
-                                <label class="cursor-pointer text-center">
-                                    <input type="radio" name="${q.id}" value="${val}" onchange="handleScoreChange('${cat.key}', '${q.id}', ${val})" class="sr-only peer">
-                                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-slate-200 peer-checked:bg-${cat.colorClass}-600 peer-checked:text-white peer-checked:border-${cat.colorClass}-600 peer-checked:font-bold flex items-center justify-center text-xs text-slate-600 hover:bg-slate-100 transition-all">
-                                        ${val}
-                                    </div>
-                                </label>
-                            `).join('')}
-                        </div>
-                    `;
-                    container.appendChild(qDiv);
-                });
-            });
-        }
-
-        function handleScoreChange(pillar, qId, val) {
-            currentScores[pillar][qId] = val;
-            updateAll();
-        }
-
-        function loadRetailPreset(type) {
-            const presetData = presetsRetail[type];
-            if (!presetData) return;
-
-            Object.keys(presetData).forEach(qId => {
-                const pillar = qId.charAt(0);
-                const val = presetData[qId];
-                currentScores[pillar][qId] = val;
-
-                const input = document.querySelector(`input[name="${qId}"][value="${val}"]`);
-                if (input) {
-                    input.checked = true;
-                }
-            });
-
-            updateAll();
-        }
-
-        function resetAssessment() {
-            currentScores = { C: {}, H: {}, A: {} };
-            const inputs = document.querySelectorAll('#cha-form input[type="radio"]');
-            inputs.forEach(input => input.checked = false);
-            updateAll();
-        }
-
-        function calculateSubtotals() {
-            let totalC = 0, countC = 0;
-            let totalH = 0, countH = 0;
-            let totalA = 0, countA = 0;
-
-            Object.values(currentScores.C).forEach(v => { totalC += v; countC++; });
-            Object.values(currentScores.H).forEach(v => { totalH += v; countH++; });
-            Object.values(currentScores.A).forEach(v => { totalA += v; countA++; });
-
-            return {
-                C: totalC, countC,
-                H: totalH, countH,
-                A: totalA, countA,
-                total: totalC + totalH + totalA,
-                answeredCount: countC + countH + countA
-            };
-        }
-
-        function updateAll() {
-            const res = calculateSubtotals();
-
-            document.getElementById('subtotal-c').textContent = res.C;
-            document.getElementById('subtotal-h').textContent = res.H;
-            document.getElementById('subtotal-a').textContent = res.A;
-
-            document.getElementById('quick-c').textContent = res.C;
-            document.getElementById('quick-h').textContent = res.H;
-            document.getElementById('quick-a').textContent = res.A;
-
-            document.getElementById('progress-text').textContent = `${res.answeredCount} / 18`;
-            const pct = Math.round((res.answeredCount / 18) * 100);
-            document.getElementById('progress-bar').style.width = `${pct}%`;
-
-            document.getElementById('score-total').textContent = res.total;
-            document.getElementById('score-c').textContent = res.C;
-            document.getElementById('score-h').textContent = res.H;
-            document.getElementById('score-a').textContent = res.A;
-
-            const avgC = res.countC > 0 ? (res.C / 6).toFixed(1) : '0.0';
-            const avgH = res.countH > 0 ? (res.H / 6).toFixed(1) : '0.0';
-            const avgA = res.countA > 0 ? (res.A / 6).toFixed(1) : '0.0';
-
-            document.getElementById('level-c').textContent = `Média: ${avgC}`;
-            document.getElementById('level-h').textContent = `Média: ${avgH}`;
-            document.getElementById('level-a').textContent = `Média: ${avgA}`;
-
-            updateMaturityBadge(res.total, res.answeredCount);
-            updateDominantProfile(res);
-            updateActionPlan(res);
-            updateCharts(res);
-            updateSpecificRecommendations();
-        }
-
-        function updateMaturityBadge(total, count) {
-            const badge = document.getElementById('maturity-badge');
-            if (count < 18) {
-                badge.textContent = `Em preenchimento (${count}/18)`;
-                badge.className = "inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-indigo-900 text-indigo-300 w-fit";
-            } else if (total >= 72) {
-                badge.textContent = "Comércio de Alta Performance";
-                badge.className = "inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 w-fit";
-            } else if (total >= 50) {
-                badge.textContent = "Comércio em Desenvolvimento";
-                badge.className = "inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 w-fit";
-            } else {
-                badge.textContent = "Risco Operacional Crítico";
-                badge.className = "inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 w-fit";
-            }
-        }
-
-        function updateDominantProfile(res) {
-            const titleEl = document.getElementById('profile-title');
-            const tagEl = document.getElementById('profile-tag');
-            const descEl = document.getElementById('profile-desc');
-            const strengthsEl = document.getElementById('profile-strengths');
-            const risksEl = document.getElementById('profile-risks');
-
-            if (res.answeredCount < 6) {
-                titleEl.textContent = "Preencha o questionário acima";
-                tagEl.textContent = "Pendente";
-                descEl.textContent = "Responda às questões para identificar a saúde operacional e financeira do seu comércio.";
-                strengthsEl.textContent = "-";
-                risksEl.textContent = "-";
-                return;
-            }
-
-            const c = res.C;
-            const h = res.H;
-            const a = res.A;
-
-            let key = "lojista_alta_performance";
-
-            if (c >= 24 && h >= 24 && a >= 24) {
-                key = "lojista_alta_performance";
-            } else if (h >= 20 && a >= 20 && c < 18) {
-                key = "vendedor_sem_margem";
-            } else if (c >= 20 && h < 18) {
-                key = "estoque_parado";
-            } else if (c >= 18 && a < 18) {
-                key = "atendente_passivo";
-            } else {
-                if (h > c && h > a) key = "vendedor_sem_margem";
-                else if (c > h && c > a) key = "estoque_parado";
-                else key = "atendente_passivo";
-            }
-
-            const data = archetypesData[key];
-
-            titleEl.textContent = data.title;
-            tagEl.textContent = data.subtitle;
-            descEl.textContent = data.desc;
-            strengthsEl.textContent = data.strengths;
-            risksEl.textContent = data.risks;
-        }
-
-        function updateActionPlan(res) {
-            const bAlertText = document.getElementById('bottleneck-text');
-            const p30Title = document.getElementById('pdi-30-title');
-            const p30Desc = document.getElementById('pdi-30-desc');
-            const p30Kpi = document.getElementById('pdi-30-kpi');
-
-            const p60Title = document.getElementById('pdi-60-title');
-            const p60Desc = document.getElementById('pdi-60-desc');
-            const p60Kpi = document.getElementById('pdi-60-kpi');
-
-            const p90Title = document.getElementById('pdi-90-title');
-            const p90Desc = document.getElementById('pdi-90-desc');
-            const p90Kpi = document.getElementById('pdi-90-kpi');
-
-            if (res.answeredCount < 6) {
-                bAlertText.textContent = "Preencha ao menos 6 perguntas para diagnosticar a prioridade do seu negócio.";
-                return;
-            }
-
-            const scores = [
-                { name: "Conhecimento (Precificação & Margem)", score: res.C, key: "C" },
-                { name: "Habilidade (Operação & Negociação)", score: res.H, key: "H" },
-                { name: "Atitude (Postura Comercial & Prospecção)", score: res.A, key: "A" }
-            ];
-
-            scores.sort((a, b) => a.score - b.score);
-            const lowest = scores[0];
-
-            if (currentMode === 'solo_comercio') {
-                if (lowest.key === "C") {
-                    bAlertText.textContent = "Seu maior risco é a FALTA DE PRECIFICAÇÃO E MARGEM REAL. Você pode estar vendendo sem lucro devido a taxas de cartão, frete e custos invisíveis.";
-                    p30Title.textContent = "Recálculo de Markup & Taxas";
-                    p30Desc.textContent = "Planilhar o custo exato de cada item incluindo frete e a taxa máxima da maquininha/pix. Ajustar preços dos 10 itens mais vendidos.";
-                    p30Kpi.textContent = "Tabela de preços ajustada com margem mínima de 30% livre";
-
-                    p60Title.textContent = "Separação de Bolso PF x PJ";
-                    p60Desc.textContent = "Abrir conta bancária PJ separada e fixar um pró-labore semanal fixo para não 'sangrar' o dinheiro da reposição de estoque.";
-                    p60Kpi.textContent = "100% dos recebimentos do comércio na conta PJ";
-
-                    p90Title.textContent = "Formalização MEI & Controle Financeiro";
-                    p90Desc.textContent = "Formalizar como MEI para obter CNPJ, negociar compras com emissão de nota fiscal direta de fábrica e reduzir custo de aquisição.";
-                    p90Kpi.textContent = "CNPJ ativo e cadastro aprovado em 2 novos distribuidores";
-
-                } else if (lowest.key === "H") {
-                    bAlertText.textContent = "Seu maior risco é a HABILIDADE OPERACIONAL & FIADO. Há perdas por desorganização de estoque, concessão de crediário sem garantia ou falta de divulgação ativa.";
-                    p30Title.textContent = "Eliminação do Fiado & Queima de Pontas";
-                    p30Desc.textContent = "Cortar fiado/caderneta e exigir 100% cartão/pix. Criar bazar/bazar virtual para liquidar peças paradas há mais de 60 dias.";
-                    p30Kpi.textContent = "Recuperação de pelo menos R$ 1.000 em caixa com pontas de estoque";
-
-                    p60Title.textContent = "Catálogo Digital & WhatsApp de Vendas";
-                    p60Desc.textContent = "Montar catálogo no WhatsApp Business com fotos limpas e mandar lista de transmissão semanal com novidades para clientes cadastrados.";
-                    p60Kpi.textContent = "Envio quinzenal de catálogo para 100+ clientes cadastrados";
-
-                    p90Title.textContent = "Negociação em Lote no Atacado";
-                    p90Desc.textContent = "Juntar pedidos com outros comerciantes parceiros para comprar em escala e obter 10% a 15% de desconto no custo da mercadoria.";
-                    p90Kpi.textContent = "Redução comprovada de 10% no valor unitário de compra";
-
-                } else {
-                    bAlertText.textContent = "Seu maior risco é a POSTURA & FALTA DE PROSPECÇÃO. Faltam ações diárias de busca de clientes e consistência na abertura do canal de vendas.";
-                    p30Title.textContent = "Prospecção Ativa Diária";
-                    p30Desc.textContent = "Atender/abordar ao menos 10 potenciais clientes por dia via redes sociais, abordagem de rua ou indicação direta.";
-                    p30Kpi.textContent = "Crescimento de 20% no número de contatos ativos";
-
-                    p60Title.textContent = "Ações em Datas Comemorativas";
-                    p60Desc.textContent = "Planejar antecipadamente campanhas para datas fortes (Dia das Mães, Namorados, Black Friday) com kits de presente prontos.";
-                    p60Kpi.textContent = "Aumento de 25% nas vendas do mês comemorativo";
-
-                    p90Title.textContent = "Consistência de Marca e Reinvestimento";
-                    p90Desc.textContent = "Destinar 40% do lucro líquido mensal para reinvestir no aumento da variedade do estoque.";
-                    p90Kpi.textContent = "Expansão de 30% no mix de mercadorias disponíveis";
-                }
-            } else {
-                // LOJISTA FORMAL
-                if (lowest.key === "C") {
-                    bAlertText.textContent = "Seu maior gargalo na loja é a GESTÃO FINANCEIRA & ESTRUTURA DE DRE. Falta clareza do Ponto de Equilíbrio e classificação da Curva ABC do estoque.";
-                    p30Title.textContent = "Mapeamento do Ponto de Equilíbrio da Loja";
-                    p30Desc.textContent = "Somar todos os custos fixos da loja (aluguel, equipe, luz, sistemas) e calcular a meta diária exata de vendas para não ter prejuízo.";
-                    p30Kpi.textContent = "Meta de vendas diária exposta no balcão da equipe";
-
-                    p60Title.textContent = "Implantação da Curva ABC no Estoque";
-                    p60Desc.textContent = "Classificar o estoque da loja: focar compras nos itens 'A' (maior giro) e promover liquidação para os itens 'C' empacados.";
-                    p60Kpi.textContent = "Redução do estoque parado de classe 'C' em 40%";
-
-                    p90Title.textContent = "Auditoria Tributária Comercial";
-                    p90Desc.textContent = "Revisar com a contabilidade a alíquota do Simples e o aproveitamento de créditos de ICMS/ST nos produtos vendidos.";
-                    p90Kpi.textContent = "Economia tributária legal ou relatório de compliance emitido";
-
-                } else if (lowest.key === "H") {
-                    bAlertText.textContent = "Seu maior gargalo na loja é a EXECUÇÃO OPERACIONAL & TREINAMENTO DA EQUIPE. Vendedores desmotivados ou falta de processos no caixa prejudicam a loja.";
-                    p30Title.textContent = "Treinamento de Abordagem & Peça Adicional (PA)";
-                    p30Desc.textContent = "Treinar a equipe de vendas para aplicar técnicas de vendas cruzadas (oferecer meias na compra do sapato, acessório com a roupa).";
-                    p30Kpi.textContent = "Elevação do PA (Peças por Atendimento) de 1,2 para 1,8";
-
-                    p60Title.textContent = "Reformulação do Vitrinismo e Layout";
-                    p60Desc.textContent = "Mudar a vitrine a cada 15 dias e redefinir o caminho do cliente na loja colocando os produtos de maior margem na altura dos olhos.";
-                    p60Kpi.textContent = "Aumento de 15% na taxa de entrada de clientes na loja";
-
-                    p90Title.textContent = "Auditoria de Prevenção de Perdas";
-                    p90Desc.textContent = "Implantar conferência semanal de estoque por amostragem e rotinas no caixa para evitar furtos, quebras e diferenças de inventário.";
-                    p90Kpi.textContent = "Índice de perdas de estoque menor que 0,5% do faturamento";
-
-                } else {
-                    bAlertText.textContent = "Seu maior gargalo na loja é a LIDERANÇA & INOVAÇÃO CANAL. A loja está engessada no modelo tradicional e precisa de energia comercial renovada.";
-                    p30Title.textContent = "Rituais Matinais de Vendas (Matinais de 10 min)";
-                    p30Desc.textContent = "Realizar reuniões diárias de 10 minutos antes de abrir a loja alinhando a meta do dia, o produto em destaque e reconhecendo boas vendas.";
-                    p30Kpi.textContent = "100% das manhãs com alinhamento de metas com a equipe";
-
-                    p60Title.textContent = "Implantação de Canal Digital da Loja (Venda Omnichannel)";
-                    p60Desc.textContent = "Ativar equipe de vendas para fazer 'Social Selling' (vender pelo WhatsApp da loja nos horários de movimento fraco no salão).";
-                    p60Kpi.textContent = "Canal digital representando 15% a 20% do faturamento total";
-
-                    p90Title.textContent = "Programa de Fidelidade e Clientes VIP";
-                    p90Desc.textContent = "Criar clube de vantagens para clientes frequentes com avisos antecipados de coleções e descontos no mês de aniversário.";
-                    p90Kpi.textContent = "Taxa de recompra de clientes cadastrados superior a 30%";
-                }
-            }
-        }
-
-        function updateSpecificRecommendations() {
-            const container = document.getElementById('pdi-specific-recommendations');
-            if (currentMode === 'solo_comercio') {
-                container.innerHTML = `
-                    <div class="p-3.5 rounded-lg bg-indigo-900/80 border border-indigo-800">
-                        <span class="font-bold text-amber-400 block mb-1">C - Ajuste de Margem Solo</span>
-                        <p>Nunca calcule preço apenas 'multiplicando por 2'. Some custo de aquisição + frete + embalagem + taxa da maquininha + sua margem de lucro real.</p>
-                    </div>
-                    <div class="p-3.5 rounded-lg bg-indigo-900/80 border border-indigo-800">
-                        <span class="font-bold text-emerald-400 block mb-1">H - Giro de Dinheiro Rápidos</span>
-                        <p>Dinheiro parado em prateleira é prejuízo. Se um produto não vendeu em 45 dias, faça liquidação ou monte kits promocionais para recuperar o capital.</p>
-                    </div>
-                    <div class="p-3.5 rounded-lg bg-indigo-900/80 border border-indigo-800">
-                        <span class="font-bold text-indigo-300 block mb-1">A - Disciplina de Caixa</span>
-                        <p>A loja não é seu caixa eletrônico. Defina um dia fixo da semana para retirar seu ganho e mantenha o resto do valor intocável para repor mercadorias.</p>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div class="p-3.5 rounded-lg bg-indigo-900/80 border border-indigo-800">
-                        <span class="font-bold text-amber-400 block mb-1">C - Gestão do DRE Comercial</span>
-                        <p>Monitore o CMV (Custo da Mercadoria Vendida) semanalmente. Em lojas de varejo saudáveis, o CMV deve ficar entre 40% e 55% do faturamento bruto.</p>
-                    </div>
-                    <div class="p-3.5 rounded-lg bg-indigo-900/80 border border-indigo-800">
-                        <span class="font-bold text-emerald-400 block mb-1">H - Excelência na Loja Física</span>
-                        <p>Crie rotinas rígidas de limpeza, iluminação e música adequada no ponto de venda. A vitrine deve ser trocada quinzenalmente sem exceções.</p>
-                    </div>
-                    <div class="p-3.5 rounded-lg bg-indigo-900/80 border border-indigo-800">
-                        <span class="font-bold text-indigo-300 block mb-1">A - Liderança de Equipe</span>
-                        <p>Esteja no salão de vendas nos horários de pico. O olho do dono e o incentivo ao time de vendas transformam atendentes passivos em campeões.</p>
-                    </div>
-                `;
-            }
-        }
-
-        function selectArchetypeCard(key) {
-            const detailPanel = document.getElementById('archetype-detail-panel');
-            const data = archetypesData[key];
-
-            ['vendedor_sem_margem', 'estoque_parado', 'atendente_passivo', 'lojista_alta_performance'].forEach(k => {
-                const btn = document.getElementById(`arch-btn-${k}`);
-                if (k === key) {
-                    btn.classList.add('ring-2', 'ring-indigo-500', 'bg-white');
-                    btn.classList.remove('bg-slate-50/50');
-                } else {
-                    btn.classList.remove('ring-2', 'ring-indigo-500', 'bg-white');
-                    btn.classList.add('bg-slate-50/50');
-                }
-            });
-
-            detailPanel.innerHTML = `
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-900 pb-3 mb-3">
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400">${data.subtitle}</span>
-                        <h3 class="text-xl font-extrabold text-white">${data.title}</h3>
-                    </div>
-                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-900 text-indigo-200 w-fit">Modo: ${currentMode === 'solo_comercio' ? 'Comerciante Solo' : 'Lojista Formal'}</span>
+    </div>
+
+    <form id="chaForm">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 class="section-title" style="margin-bottom:0;">2. Questionário de Autoavaliação do Varejo</h2>
+                <span style="font-size: 0.8rem; color: var(--text-light);">Escala: 1 (Discordo) a 5 (Concordo Totalmente)</span>
+            </div>
+
+            <div class="preset-buttons">
+                <span style="font-size:0.8rem; align-self:center; font-weight:bold;">Simulação Rápida:</span>
+                <button type="button" class="preset-btn" onclick="simulate('sem_margem')">Perfil Vendedor Sem Margem</button>
+                <button type="button" class="preset-btn" onclick="simulate('comprador_impulsivo')">Perfil Comprador Impulsivo</button>
+                <button type="button" class="preset-btn" onclick="simulate('atendente')">Perfil Atendente de Balcão</button>
+                <button type="button" class="preset-btn" onclick="simulate('campeao')">Perfil Lojista Campeão</button>
+            </div>
+
+            <div id="questions-container">
+                <!-- Perguntas renderizadas via JavaScript -->
+            </div>
+
+            <button type="button" class="btn-submit" onclick="calculateResults()">GERAR DIAGNÓSTICO DO COMÉRCIO</button>
+        </div>
+    </form>
+
+    <div id="results" class="results-container">
+        <div class="card">
+            <h2 class="section-title">📊 Raio-X Diagnóstico do Comércio</h2>
+            <div style="margin-bottom: 15px;">
+                <span id="profileBadge" class="profile-badge">Analisando...</span>
+                <h3 id="profileTitle" style="color: var(--primary); margin-bottom: 8px;"></h3>
+                <p id="profileDesc" style="color: var(--text-light); font-size: 0.95rem;"></p>
+            </div>
+
+            <div class="charts-grid">
+                <div>
+                    <canvas id="radarChart"></canvas>
                 </div>
-                <p class="text-sm text-slate-200 leading-relaxed mb-4">${data.desc}</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    <div class="p-3.5 rounded-lg bg-indigo-900/90 border border-indigo-800">
-                        <strong class="text-emerald-400 font-bold block mb-1">Pontos Fortes:</strong>
-                        <span class="text-slate-300">${data.strengths}</span>
-                    </div>
-                    <div class="p-3.5 rounded-lg bg-indigo-900/90 border border-indigo-800">
-                        <strong class="text-rose-400 font-bold block mb-1">Gargalos e Perigos no Varejo:</strong>
-                        <span class="text-slate-300">${data.risks}</span>
-                    </div>
+                <div>
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <div class="risk-box" id="riskBox">
+                <h4>⚠️ Principais Riscos do Comércio no Estado Atual:</h4>
+                <p id="riskText"></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">🔎 Análise por Pilar Comercial</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-top: 3px solid #059669;">
+                    <h4 style="color: #065f46; margin-bottom: 8px;">🧠 Conhecimentos (<span id="scoreC">0</span>/30)</h4>
+                    <p id="analysisC" style="font-size: 0.88rem; color: var(--text-light);"></p>
+                </div>
+                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-top: 3px solid #0284c7;">
+                    <h4 style="color: #0369a1; margin-bottom: 8px;">🛠️ Habilidades (<span id="scoreH">0</span>/30)</h4>
+                    <p id="analysisH" style="font-size: 0.88rem; color: var(--text-light);"></p>
+                </div>
+                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-top: 3px solid #d97706;">
+                    <h4 style="color: #b45309; margin-bottom: 8px;">🔥 Atitudes (<span id="scoreA">0</span>/30)</h4>
+                    <p id="analysisA" style="font-size: 0.88rem; color: var(--text-light);"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">📦 Plano de Ação Comercial (PDI 30-60-90 Dias)</h2>
+            <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 15px;">Passos práticos focados na desmobilização de estoque parado, proteção do fluxo de caixa e aceleração das vendas.</p>
+            
+            <div class="pdi-timeline" id="pdiTimeline">
+                <!-- PDI renderizado via JS -->
+            </div>
+
+            <button onclick="window.print()" style="margin-top:20px; background:#374151; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold;">🖨️ Imprimir / Salvar PDF do Relatório</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentMode = 'formal';
+    let radarChartInstance = null;
+    let barChartInstance = null;
+
+    const questionsData = {
+        formal: [
+            // Conhecimentos
+            { id: 'c1', pillar: 'C', sub: 'Markup e Margem', text: 'Sei calcular o Markup exato de cada produto incluindo impostos, frete e taxas de cartão.' },
+            { id: 'c2', pillar: 'C', sub: 'CMV e Giro', text: 'Acompanho o Custo da Mercadoria Vendida (CMV) e sei o tempo médio de giro do meu estoque.' },
+            { id: 'c3', pillar: 'C', sub: 'Curva ABC de Produtos', text: 'Conheço exatamente quais são os 20% de produtos que geram 80% do faturamento da loja.' },
+            { id: 'c4', pillar: 'C', sub: 'Tributação de Varejo', text: 'Compreendo as alíquotas do Simples/ST e o impacto dos impostos na margem líquida.' },
+            { id: 'c5', pillar: 'C', sub: 'Calendário Comercial', text: 'Mapeio previamente as principais datas comemorativas do ano para planejar compras.' },
+            { id: 'c6', pillar: 'C', sub: 'Métricas de Loja', text: 'Acompanho métricas como Ticket Médio, Peça por Atendimento (PA) e Taxa de Conversão.' },
+            
+            // Habilidades
+            { id: 'h1', pillar: 'H', sub: 'Gestão de Estoque', text: 'Realizo inventários periódicos para evitar perdas, furtos e ruptura de estoque.' },
+            { id: 'h2', pillar: 'H', sub: 'Negociação com Fornecedor', text: 'Conconsigo prazos estendidos de pagamento e descontos em compras em volume com atacadistas.' },
+            { id: 'h3', pillar: 'H', sub: 'Gestão de Vendedores', text: 'Treino e motivo minha equipe de vendas para baterem metas diárias e semanais.' },
+            { id: 'h4', pillar: 'H', sub: 'Vitrinismo/Merchandising', text: 'Organizo a loja física/virtual aplicando técnicas de exposição que estimulam a compra.' },
+            { id: 'h5', pillar: 'H', sub: 'Marketing Local/Digital', text: 'Utilizo tráfego pago local, redes sociais e WhatsApp Business para atrair clientes.' },
+            { id: 'h6', pillar: 'H', sub: 'Controle de Caixa', text: 'Faço o fechamento rigoroso do caixa diário e conciliação bancária das maquininhas.' },
+
+            // Atitudes
+            { id: 'a1', pillar: 'A', sub: 'Agilidade em Promoções', text: 'Crio liquidações e queimas de estoque rapidamente assim que percebo itens encalhados.' },
+            { id: 'a2', pillar: 'A', sub: 'Foco no Cliente', text: 'Garanto um atendimento excelente resolvendo trocas e reclamações com rapidez.' },
+            { id: 'a3', pillar: 'A', sub: 'Gosto por Vender', text: 'Gosto de estar no chão de loja conversando com clientes e entendendo suas necessidades.' },
+            { id: 'a4', pillar: 'A', sub: 'Disciplinado no Caixa', text: 'Não retiro dinheiro do caixa da loja para despesas pessoais sem o devido pró-labore.' },
+            { id: 'a5', pillar: 'A', sub: 'Inovação em Canais', text: 'Busco constantemente novos canais de venda (Instagram, e-commerce, marketplaces).' },
+            { id: 'a6', pillar: 'A', sub: 'Resiliência Comercial', text: 'Mantenho a equipe focada e crio estratégias ativas em meses de movimento fraco.' }
+        ],
+        autonomo: [
+            // Conhecimentos
+            { id: 'c1', pillar: 'C', sub: 'Custo Real da Mercadoria', text: 'Sei quanto custa exatamente cada produto colocado na mão do cliente (incluindo frete/combustível).' },
+            { id: 'c2', pillar: 'C', sub: 'Diferencial Competitivo', text: 'Sei exatamente por que os clientes preferem comprar comigo e não em grandes lojas ou na internet.' },
+            { id: 'c3', pillar: 'C', sub: 'Controle do Fiado', text: 'Entendo o risco do fiado/crediário próprio e sei o impacto da inadimplência no meu caixa.' },
+            { id: 'c4', pillar: 'C', sub: 'Giro Rápido', text: 'Sei quais mercadorias vendem em poucos dias e evito comprar produtos de giro lento.' },
+            { id: 'c5', pillar: 'C', sub: 'Taxas de Maquininhas', text: 'Conheço todas as taxas de parcelamento das minhas maquininhas e repasso ou embuto no preço.' },
+            { id: 'c6', pillar: 'C', sub: 'Metas de Venda Solo', text: 'Tenho uma meta de vendas diária/semanal para cobrir minhas despesas e ter lucro real.' },
+
+            // Habilidades
+            { id: 'h1', pillar: 'H', sub: 'Venda Direta via WhatsApp', text: 'Utilizo listas de transmissão, catálogo atualizado e status do WhatsApp para vender diariamente.' },
+            { id: 'h2', pillar: 'H', sub: 'Organização de Encomendas', text: 'Acompanho rigorosamente prazos de entrega, pedidos de clientes e reposição com fornecedores.' },
+            { id: 'h3', pillar: 'H', sub: 'Cobrança Assertiva', text: 'Faço a cobrança de clientes inadimplentes de forma educada, firme e sem constrangimento.' },
+            { id: 'h4', pillar: 'H', sub: 'Fotos e Apresentação', text: 'Tiro boas fotos e crio vídeos atraentes dos produtos para postar nas redes sociais.' },
+            { id: 'h5', pillar: 'H', sub: 'Busca de Bons Atacadistas', text: 'Pesquiso e encontro novos fornecedores e polos atacadistas com melhores preços e qualidade.' },
+            { id: 'h6', pillar: 'H', sub: 'Separação Financeira', text: 'Consigo manter uma conta bancária exclusiva para as compras e vendas da minha mercadoria.' },
+
+            // Atitudes
+            { id: 'a1', pillar: 'A', sub: 'Prospecção Ativa Solo', text: 'Não fico esperando o cliente procurar; envio novidades e chamo clientes sumidos ativamente.' },
+            { id: 'a2', pillar: 'A', sub: 'Tolerância ao Não', text: 'Lido bem com recusas de vendas e continuo oferecendo novos produtos com entusiasmo.' },
+            { id: 'a3', pillar: 'A', sub: 'Cuidado com o Caixa', text: 'Não gasto o dinheiro das vendas antes de repor o estoque e pagar os fornecedores.' },
+            { id: 'a4', pillar: 'A', sub: 'Visão de Crescimento', text: 'Reinvisto parte do meu lucro para aumentar o estoque ou abrir meu ponto formal no futuro.' },
+            { id: 'a5', pillar: 'A', sub: 'Relacionamento Próximo', text: 'Mantenho contato humanizado lembrando do aniversário e preferências de cada cliente.' },
+            { id: 'a6', pillar: 'A', sub: 'Resistência Física/Mental', text: 'Tenho energia e disposição para a rotina intensa de compras, entregas e atendimento.' }
+        ]
+    };
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('btn-formal').classList.toggle('active', mode === 'formal');
+        document.getElementById('btn-autonomo').classList.toggle('active', mode === 'autonomo');
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+        const list = questionsData[currentMode];
+
+        list.forEach((q, idx) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'q-group';
+            qDiv.innerHTML = `
+                <div class="q-title">${idx + 1}. [${q.sub}] ${q.text}</div>
+                <div class="scale-options">
+                    ${[1,2,3,4,5].map(num => `
+                        <label class="scale-btn" id="lbl_${q.id}_${num}">
+                            <input type="radio" name="${q.id}" value="${num}" onchange="selectOption('${q.id}', ${num})">
+                            ${num}
+                        </label>
+                    `).join('')}
                 </div>
             `;
+            container.appendChild(qDiv);
+        });
+    }
+
+    function selectOption(qId, val) {
+        for(let i=1; i<=5; i++) {
+            const lbl = document.getElementById(`lbl_${qId}_${i}`);
+            if(lbl) lbl.classList.remove('selected');
+        }
+        document.getElementById(`lbl_${qId}_${val}`).classList.add('selected');
+    }
+
+    function simulate(profile) {
+        const list = questionsData[currentMode];
+        list.forEach(q => {
+            let val = 3;
+            if (profile === 'sem_margem') {
+                val = q.pillar === 'A' ? 5 : (q.pillar === 'H' ? 4 : 1);
+            } else if (profile === 'comprador_impulsivo') {
+                val = q.pillar === 'A' ? 5 : (q.pillar === 'C' ? 2 : 2);
+            } else if (profile === 'atendente') {
+                val = q.pillar === 'C' ? 4 : (q.pillar === 'H' ? 2 : 1);
+            } else if (profile === 'campeao') {
+                val = Math.floor(Math.random() * 2) + 4;
+            }
+            
+            const radio = document.querySelector(`input[name="${q.id}"][value="${val}"]`);
+            if(radio) {
+                radio.checked = true;
+                selectOption(q.id, val);
+            }
+        });
+    }
+
+    function calculateResults() {
+        const list = questionsData[currentMode];
+        let scoreC = 0, scoreH = 0, scoreA = 0;
+        let subScores = {};
+        let allAnswered = true;
+
+        list.forEach(q => {
+            const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+            if(!selected) {
+                allAnswered = false;
+            } else {
+                const val = parseInt(selected.value);
+                subScores[q.sub] = val;
+                if(q.pillar === 'C') scoreC += val;
+                if(q.pillar === 'H') scoreH += val;
+                if(q.pillar === 'A') scoreA += val;
+            }
+        });
+
+        if(!allAnswered) {
+            alert('Por favor, responda a todas as 18 perguntas para gerar um diagnóstico preciso.');
+            return;
         }
 
-        function initCharts() {
-            const radarCtx = document.getElementById('radarChart').getContext('2d');
-            radarChartInstance = new Chart(radarCtx, {
-                type: 'radar',
-                data: {
-                    labels: [
-                        'Precificação & Margem (C)',
-                        'Visão de Estoque (C)',
-                        'Tributos & Custos (C)',
-                        'Vendas & Atendimento (H)',
-                        'Negociação Atacado (H)',
-                        'Controle de Caixa (H)',
-                        'Resiliência no Varejo (A)',
-                        'Prospecção Ativa (A)',
-                        'Reinvestimento (A)'
-                    ],
-                    datasets: [
-                        {
-                            label: 'Pontuação do Seu Comércio',
-                            data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            backgroundColor: 'rgba(217, 119, 6, 0.25)',
-                            borderColor: 'rgba(217, 119, 6, 1)',
-                            borderWidth: 2,
-                            pointBackgroundColor: 'rgba(217, 119, 6, 1)'
-                        },
-                        {
-                            label: 'Meta Lojista Campeão',
-                            data: [4, 4, 4, 4, 4, 4, 4, 4, 4],
-                            backgroundColor: 'rgba(16, 185, 129, 0.05)',
-                            borderColor: 'rgba(16, 185, 129, 0.6)',
-                            borderWidth: 1.5,
-                            borderDash: [4, 4],
-                            pointRadius: 0
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            min: 0,
-                            max: 5,
-                            ticks: { stepSize: 1, display: false },
-                            pointLabels: {
-                                font: { size: 10 },
-                                color: '#334155',
-                                callback: function(value) {
-                                    return value.length > 16 ? value.substring(0, 16) + '...' : value;
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { font: { size: 11 } }
-                        }
-                    }
-                }
-            });
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('scoreC').innerText = scoreC;
+        document.getElementById('scoreH').innerText = scoreH;
+        document.getElementById('scoreA').innerText = scoreA;
 
-            const barCtx = document.getElementById('barChart').getContext('2d');
-            barChartInstance = new Chart(barCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Conhecimento Comercial', 'Habilidade Operacional', 'Atitude de Vendas'],
-                    datasets: [
-                        {
-                            label: 'Pontos Obtidos (máx 30)',
-                            data: [0, 0, 0],
-                            backgroundColor: [
-                                'rgba(79, 70, 229, 0.85)',
-                                'rgba(5, 150, 105, 0.85)',
-                                'rgba(217, 119, 6, 0.85)'
-                            ],
-                            borderRadius: 6
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 30,
-                            ticks: { stepSize: 5 }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
+        // Determinar Perfil
+        let title = "", badge = "", desc = "", risk = "";
+
+        if (scoreA >= 20 && scoreH >= 18 && scoreC < 18) {
+            badge = "O Vendedor Sem Margem";
+            title = "Alto Volume / Pouco Lucro Real";
+            desc = "Sabe vender e se dedica muito às vendas, mas por não dominar Markup real e controle de custos, acaba trabalhando duro sem ver a cor do dinheiro.";
+            risk = "Quebra do negócio por iliquidez. Alto faturamento com caixa zerado ou negativo devido a margens esmagadas e taxas escondidas.";
+        } else if (scoreA >= 22 && scoreC < 18 && scoreH < 18) {
+            badge = "O Comprador Impulsivo";
+            title = "Estoque Alto / Caixa Empacado";
+            desc = "Empolga-se nas compras com fornecedores, mas carece de análise de giro, Curva ABC e planejamento financeiro.";
+            risk = "Capital de giro imobilizado em mercadorias paradas (estoque encalhado), necessitando de empréstimos caros para cobrir o caixa.";
+        } else if (scoreC >= 20 && scoreH < 18 && scoreA < 18) {
+            badge = "O Atendente de Balcão";
+            title = "Gestão Passiva do Comércio";
+            desc = "Entende do produto e dos custos, mas falta atitude proativa para buscar clientes, fazer promoções ou treinar a equipe para vender mais.";
+            risk = "Perda de clientes para concorrentes mais agressivos no marketing digital e nas vendas ativas.";
+        } else if (scoreC >= 20 && scoreH >= 20 && scoreA >= 20) {
+            badge = "O Lojista Campeão";
+            title = "Comércio de Alto Desempenho";
+            desc = "Excelente equilíbrio entre compras certas, formação de preço correta, controle rígido de estoque e atendimento proativo.";
+            risk = "Necessidade constante de inovação em novos canais de venda (omnichannel) para defender o mercado das grandes redes.";
+        } else {
+            badge = "Comércio em Reestruturação";
+            title = "Perfil em Desenvolvimento Comercial";
+            desc = "Apresenta boas oportunidades de melhoria operacional, principalmente na organização do caixa e giro das mercadorias.";
+            risk = "Vulnerabilidade nas épocas de fraco movimento devido à falta de margem de segurança no caixa.";
         }
 
-        function updateCharts(res) {
-            if (!radarChartInstance || !barChartInstance) return;
+        document.getElementById('profileBadge').innerText = badge;
+        document.getElementById('profileTitle').innerText = title;
+        document.getElementById('profileDesc').innerText = desc;
+        document.getElementById('riskText').innerText = risk;
 
-            const c1 = currentScores.C.C1 || 0;
-            const c2 = currentScores.C.C2 || 0;
-            const c3 = ((currentScores.C.C3 || 0) + (currentScores.C.C4 || 0)) / 2;
+        // Análises individuais
+        document.getElementById('analysisC').innerText = scoreC >= 20 ? 
+            "Domina os custos e a precificação do comércio. Excelente base teórica." : 
+            "Atenção urgente ao cálculo de Markup e taxas. Você pode estar vendendo com prejuízo invisível.";
 
-            const h1 = currentScores.H.H1 || 0;
-            const h2 = currentScores.H.H2 || 0;
-            const h3 = ((currentScores.H.H3 || 0) + (currentScores.H.H5 || 0)) / 2;
+        document.getElementById('analysisH').innerText = scoreH >= 20 ? 
+            "Ótima capacidade de execução na exposição de produtos, vendas e conciliação de caixa." : 
+            "Falta de controle prático no estoque diário e na cobrança. Implementar rotinas semanais de inventário.";
 
-            const a1 = currentScores.A.A1 || 0;
-            const a2 = currentScores.A.A2 || 0;
-            const a3 = ((currentScores.A.A4 || 0) + (currentScores.A.A6 || 0)) / 2;
+        document.getElementById('analysisA').innerText = scoreA >= 20 ? 
+            "Foco e energia de vendas excepcionais. Atitude comercial forte." : 
+            "Necessário mais proatividade comercial. Não espere o cliente entrar: crie ofertas ativas via WhatsApp e redes.";
 
-            radarChartInstance.data.datasets[0].data = [c1, c2, c3, h1, h2, h3, a1, a2, a3];
-            radarChartInstance.update();
+        // Gerar PDI
+        renderPDI(scoreC, scoreH, scoreA);
 
-            barChartInstance.data.datasets[0].data = [res.C, res.H, res.A];
-            barChartInstance.update();
+        // Renderizar Gráficos
+        renderCharts(list, subScores, scoreC, scoreH, scoreA);
+
+        // Scroll suave
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderPDI(c, h, a) {
+        const timeline = document.getElementById('pdiTimeline');
+        timeline.innerHTML = '';
+
+        let lowest = 'C';
+        if(h < c && h <= a) lowest = 'H';
+        if(a < c && a < h) lowest = 'A';
+
+        let pdi30 = "", pdi60 = "", pdi90 = "", kpi30 = "", kpi60 = "", kpi90 = "";
+
+        if(lowest === 'C') {
+            pdi30 = "Recálculo do Markup: Revisar o preço de venda de todos os itens considerando impostos, fretes e taxas de maquininhas de cartão.";
+            kpi30 = "KPI: Tabela de preços 100% atualizada com margem real garantida.";
+            pdi60 = "Classificação do Estoque: Montar a Curva ABC de produtos para identificar o que dá lucro real e o que está empacado.";
+            kpi60 = "KPI: Identificação exata dos 20% de produtos mais lucrativos.";
+            pdi90 = "Planejamento de Compras: Criar orçamento de compras (Open to Buy) baseado no histórico de vendas e metas do mês.";
+            kpi90 = "KPI: Redução de 15% no custo de estocagem desnecessária.";
+        } else if(lowest === 'H') {
+            pdi30 = "Ação de Estoque Parado: Realizar uma 'Queima de Estoque' ou 'Bazar de Giro' para transformar produtos parados há mais de 60 dias em dinheiro vivo.";
+            kpi30 = "KPI: Recuperação de ao menos R$ 1.500 a R$ 5.000 de caixa imediato.";
+            pdi60 = "Treinamento de Atendimento & Vendas: Padronizar o roteiro de atendimento e ofertar produtos complementares no checkout (Cross-selling).";
+            kpi60 = "KPI: Aumento de 10% no Ticket Médio por venda.";
+            pdi90 = "Organização do Caixa & Conciliação: Adotar sistema simples de PDV ou planilha de conciliação diária de cartões e PIX.";
+            kpi90 = "KPI: Zero divergência entre faturamento e saldo bancário.";
+        } else {
+            pdi30 = "Prospecção Ativa via WhatsApp: Criar um catálogo funcional e enviar ofertas semanais direcionadas para a base de clientes.";
+            kpi30 = "KPI: Aumento de 15% nas vendas ativas direcionadas.";
+            pdi60 = "Campanhas e Promoções Temáticas: Planejar antecipadamente a decoração e ofertas do próximo calendário comemorativo.";
+            kpi60 = "KPI: Bater a meta estipulada para a data comemorativa.";
+            pdi90 = "Presença Omnichannel: Estruturar as vendas pelas redes sociais ou criar parceria com plataformas de entrega/marketplaces.";
+            kpi90 = "KPI: Ao menos 15% das vendas totais vindas de canais digitais.";
         }
 
-        window.addEventListener('DOMContentLoaded', initApp);
-    </script>
+        timeline.innerHTML = `
+            <div class="pdi-item">
+                <h4>Primeiros 30 Dias: Estancar Perdas & Gerar Caixa Imediato</h4>
+                <p>${pdi30}</p>
+                <span class="kpi-badge">${kpi30}</span>
+            </div>
+            <div class="pdi-item">
+                <h4>60 Dias: Organização de Processos & Ganho de Margem</h4>
+                <p>${pdi60}</p>
+                <span class="kpi-badge">${kpi60}</span>
+            </div>
+            <div class="pdi-item">
+                <h4>90 Dias: Escala de Vendas & Fidelização</h4>
+                <p>${pdi90}</p>
+                <span class="kpi-badge">${kpi90}</span>
+            </div>
+        `;
+    }
+
+    function renderCharts(questions, subScores, c, h, a) {
+        const labels = questions.map(q => q.sub);
+        const values = questions.map(q => subScores[q.sub]);
+
+        // Radar Chart
+        const ctxRadar = document.getElementById('radarChart').getContext('2d');
+        if(radarChartInstance) radarChartInstance.destroy();
+
+        radarChartInstance = new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sua Pontuação no Comércio',
+                    data: values,
+                    backgroundColor: 'rgba(5, 150, 105, 0.2)',
+                    borderColor: '#059669',
+                    pointBackgroundColor: '#065f46'
+                }, {
+                    label: 'Meta Desejável',
+                    data: Array(18).fill(4),
+                    borderColor: 'rgba(217, 119, 6, 0.4)',
+                    borderDash: [5, 5],
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { r: { min: 0, max: 5, ticks: { stepSize: 1 } } },
+                plugins: { title: { display: true, text: 'Detalhamento das Competências de Varejo' } }
+            }
+        });
+
+        // Bar Chart
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        if(barChartInstance) barChartInstance.destroy();
+
+        barChartInstance = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['Conhecimentos (C)', 'Habilidades (H)', 'Atitudes (A)'],
+                datasets: [{
+                    label: 'Pontuação Total (Máx: 30)',
+                    data: [c, h, a],
+                    backgroundColor: ['#059669', '#0284c7', '#d97706']
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { min: 0, max: 30 } },
+                plugins: { title: { display: true, text: 'Comparativo Geral dos Pilares CHA' } }
+            }
+        });
+    }
+
+    // Inicialização
+    renderQuestions();
+</script>
+
 </body>
 </html>
